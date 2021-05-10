@@ -29,7 +29,7 @@ public class MemoryLeaker {
 			e.printStackTrace();
 			System.out.println("Error putting thread to sleep");
 		}
-		System.out.println("There is no memory leak in this program.");
+		System.out.println("Successfully executed.");
 
 	}
 }
