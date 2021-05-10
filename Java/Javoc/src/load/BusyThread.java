@@ -12,9 +12,8 @@ public class BusyThread extends Thread{
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		super.run();
-		System.out.println("Thread: " + this.getName());
+		System.out.println(this.getName());
 		while(LocalDateTime.now().isBefore(endtime)) {
 		}
 	}
