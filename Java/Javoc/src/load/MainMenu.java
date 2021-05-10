@@ -21,10 +21,12 @@ public class MainMenu {
 		case "cpu":
 			try {
 				duration = Integer.parseInt(args[1]);
+				utilization = Double.parseDouble(args[2]);
 			} catch (NumberFormatException e) {
 				System.out.println("Timeout Arguement " + args[0] + " must be a integer");
 			}
-			CpuLoader.loadCpu(duration);
+			System.out.println("Parsing duration: " + duration + ", Utilization: " + utilization);
+			CpuLoader.loadCpu(duration, utilization);
 			break;
 		case "mem":
 			try {
@@ -35,6 +37,7 @@ public class MainMenu {
 			} catch (Exception e) {
 				System.out.println("Not enough arguments.");
 			}
+			System.out.println("Parsing duration: " + duration + ", Utilization: " + utilization);
 			MemoryLeaker.testMem(duration, utilization);
 			break;
 		default:
