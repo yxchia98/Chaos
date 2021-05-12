@@ -1,4 +1,4 @@
-package load;
+package org.javocmaven.Javocmaven;
 
 import java.util.ArrayList;
 
@@ -25,6 +25,7 @@ public class MainMenu {
 			} else {
 			}
 		}
+
 		if (loadType.equals("cpu")) {
 			System.out.println("Loading CPU for: " + duration + "s, Utilization: " + utilization);
 			CpuLoader.loadCpu(duration, utilization);

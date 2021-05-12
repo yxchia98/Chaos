@@ -1,5 +1,5 @@
 package load;
 
-public class DiskReader {
 
+public class DiskReader {
 }

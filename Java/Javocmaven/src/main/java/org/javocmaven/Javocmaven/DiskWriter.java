@@ -1,4 +1,4 @@
-package load;
+package org.javocmaven.Javocmaven;
 
 import java.io.File;
 import java.io.IOException;
