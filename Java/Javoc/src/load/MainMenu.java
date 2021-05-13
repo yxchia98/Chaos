@@ -10,7 +10,7 @@ public class MainMenu {
 		ArrayList<String> parameters = new ArrayList<String>();
 		double utilization = 50;
 		for (String str : args) {
-			if (str.equals("cpu") || str.equals("mem") || str.equals("disk")) {
+			if (str.equals("cpu") || str.equals("mem") || str.equals("disk") || str.equals("net")) {
 				loadType += str;
 			} else {
 				parameters.add(str);
@@ -25,28 +25,26 @@ public class MainMenu {
 			} else {
 			}
 		}
-		if (loadType.equals("cpu")) {
+		if (loadType.contains("cpu")) {
 			System.out.println("Loading CPU for: " + duration + "s, Utilization: " + utilization);
 			CpuLoader.loadCpu(duration, utilization);
-		} else if (loadType.equals("mem")) {
+		} 
+		
+		if (loadType.contains("mem")) {
 			System.out.println("Loading Memory for: " + duration + "s, Utilization: " + utilization);
 			MemoryLeaker.testMem(duration, utilization);
 		}
 
-		else if (loadType.equals("disk")) {
+		if (loadType.contains("disk")) {
 			System.out.println("Loading Disk for: " + duration + "s, Utilization: " + utilization + "MB/s");
 			DiskWriter.DiskLoad(duration, utilization);
 		}
 
-		else if (loadType.contains("cpu") && loadType.contains("mem")) {
-			System.out.println("Loading CPU and Memory for: " + duration + "s, Utilization: " + utilization);
-			CpuLoader.loadCpu(duration, utilization);
-			MemoryLeaker.testMem(duration, utilization);
-		}
-
-		else {
-			System.out.println("Invalid arguments entered");
-		}
+//		else if (loadType.contains("cpu") && loadType.contains("mem")) {
+//			System.out.println("Loading CPU and Memory for: " + duration + "s, Utilization: " + utilization);
+//			CpuLoader.loadCpu(duration, utilization);
+//			MemoryLeaker.testMem(duration, utilization);
+//		}
 
 	}
 

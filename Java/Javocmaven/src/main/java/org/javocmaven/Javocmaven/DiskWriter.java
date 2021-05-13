@@ -6,7 +6,15 @@ import java.io.RandomAccessFile;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-public class DiskWriter {
+public class DiskWriter extends Loader{
+	
+	int duration;
+	double utilization;
+	
+	public DiskWriter(int duration, double utilization) {
+		this.duration = duration;
+		this.utilization = utilization;
+	}
 
 //	public static void main(String[] args) {
 //		int duration = 20;
@@ -36,11 +44,12 @@ public class DiskWriter {
 //		myObj.deleteOnExit();
 //
 //	}
-	
-	public static void DiskLoad (int duration, double loadinMBs) {
-		LocalDateTime endtime = LocalDateTime.now().plusSeconds(duration);
+
+	public void load() {
+		System.out.println("Writing to Disk, duration: " + this.duration + "s, utilization: " + this.utilization + "MB/s");
+		LocalDateTime endtime = LocalDateTime.now().plusSeconds(this.duration);
 		File myObj = new File("hogger.txt");
-		char[] chars = new char[(int) ((1048576 * loadinMBs) - 2)];
+		char[] chars = new char[(int) ((1048576 * this.utilization) - 2)];
 		Arrays.fill(chars, 'f');
 		String megString = new String(chars) + "\n";
 
@@ -66,4 +75,34 @@ public class DiskWriter {
 		}
 		myObj.deleteOnExit();
 	}
+
+//	public static void DiskLoad(int duration, double loadinMBs) {
+//		LocalDateTime endtime = LocalDateTime.now().plusSeconds(duration);
+//		File myObj = new File("hogger.txt");
+//		char[] chars = new char[(int) ((1048576 * loadinMBs) - 2)];
+//		Arrays.fill(chars, 'f');
+//		String megString = new String(chars) + "\n";
+//
+//		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
+//			RandomAccessFile readFile = new RandomAccessFile(myObj, "rws");
+//			file.seek(0);
+//			readFile.seek(0);
+//			while (LocalDateTime.now().isBefore(endtime)) {
+//				if ((System.currentTimeMillis() % 1000) == 0) {
+//					file.writeBytes(megString);
+////					System.out.println("writing " + megString.getBytes().length + "bytes");
+//					Thread.sleep(1);
+////					readFile.readLine();
+//				}
+//			}
+//			readFile.close();
+//			file.close();
+//		} catch (IOException e) {
+//			System.out.println("An error occurred.");
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		myObj.deleteOnExit();
+//	}
 }
