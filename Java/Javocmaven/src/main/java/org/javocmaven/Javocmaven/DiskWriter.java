@@ -8,12 +8,24 @@ import java.util.Arrays;
 
 public class DiskWriter extends Loader{
 	
-	int duration;
-	double utilization;
+	int duration = 5;
+	double utilization = 50;
 	
 	public DiskWriter(int duration, double utilization) {
 		this.duration = duration;
 		this.utilization = utilization;
+	}
+	
+	public DiskWriter(String arguments[]) {
+		if(arguments.length >= 2) {
+			this.duration = Integer.parseInt(arguments[0]);
+			this.utilization = Double.parseDouble(arguments[1]);
+		}
+		else if(arguments.length == 1) {
+			this.duration = Integer.parseInt(arguments[0]);
+		}
+		else {
+		}
 	}
 
 //	public static void main(String[] args) {
