@@ -3,28 +3,24 @@ package org.javocmaven.Javocmaven;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 
-public class DiskWriter extends Loader{
-	
+public class DiskWriter extends Loader {
+
 	int duration = 5;
-	double utilization = 50;
-	
+	double utilization = 20;
+
 	public DiskWriter(int duration, double utilization) {
 		this.duration = duration;
 		this.utilization = utilization;
 	}
-	
+
 	public DiskWriter(String arguments[]) {
-		if(arguments.length >= 2) {
+		if (arguments.length >= 2) {
 			this.duration = Integer.parseInt(arguments[0]);
 			this.utilization = Double.parseDouble(arguments[1]);
-		}
-		else if(arguments.length == 1) {
+		} else if (arguments.length == 1) {
 			this.duration = Integer.parseInt(arguments[0]);
-		}
-		else {
+		} else {
 		}
 	}
 
@@ -56,37 +52,70 @@ public class DiskWriter extends Loader{
 //		myObj.deleteOnExit();
 //
 //	}
-
 	public void load() {
-		System.out.println("Writing to Disk, duration: " + this.duration + "s, utilization: " + this.utilization + "MB/s");
-		LocalDateTime endtime = LocalDateTime.now().plusSeconds(this.duration);
-		File myObj = new File("hogger.txt");
-		char[] chars = new char[(int) ((1048576 * this.utilization) - 2)];
-		Arrays.fill(chars, 'f');
-		String megString = new String(chars) + "\n";
+		System.out.println("Utilizing " + (int) this.utilization + "% of current partition.");
+		File diskpartition = new File("/");
+		long totalspace = diskpartition.getTotalSpace();
+		long freespace = diskpartition.getUsableSpace();
+		long usedspace = totalspace - freespace;
+		double targetspace = this.utilization / 100 * totalspace;
+		File myObj = new File("hogger");
+		myObj.deleteOnExit();
+
+		System.out.println("Total space: " + Math.toIntExact((long) (totalspace / Math.pow(2, 20)))  + "MB\tUsed space: "
+				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB\tTarget space: " + Math.toIntExact((long) (targetspace / Math.pow(2, 20))) + "MB.");
 
 		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
-			RandomAccessFile readFile = new RandomAccessFile(myObj, "rws");
-			file.seek(0);
-			readFile.seek(0);
-			while (LocalDateTime.now().isBefore(endtime)) {
-				if ((System.currentTimeMillis() % 1000) == 0) {
-					file.writeBytes(megString);
-//					System.out.println("writing " + megString.getBytes().length + "bytes");
-					Thread.sleep(1);
-//					readFile.readLine();
-				}
+			if ((targetspace - usedspace) > 0) {
+				file.setLength((long) targetspace - usedspace);
+				totalspace = diskpartition.getTotalSpace();
+				freespace = diskpartition.getUsableSpace();
+				usedspace = totalspace - freespace;
+				double usedpercent = (double) usedspace / totalspace * 100;
+				System.out.println("Current utilization: " + Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB (" + Math.round(usedpercent) + "%)");
+			} else {
+				System.out.println("Already utilizing more than specified.");
 			}
-			readFile.close();
-			file.close();
+			Thread.sleep(this.duration * 1000);
+			myObj.delete();
 		} catch (IOException e) {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		myObj.deleteOnExit();
 	}
+
+//	public void load() {
+//		System.out.println("Writing to Disk, duration: " + this.duration + "s, utilization: " + this.utilization + "MB/s");
+//		LocalDateTime endtime = LocalDateTime.now().plusSeconds(this.duration);
+//		File myObj = new File("hogger.txt");
+//		char[] chars = new char[(int) ((1048576 * this.utilization) - 2)];
+//		Arrays.fill(chars, 'f');
+//		String megString = new String(chars) + "\n";
+//
+//		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
+//			RandomAccessFile readFile = new RandomAccessFile(myObj, "rws");
+//			file.seek(0);
+//			readFile.seek(0);
+//			while (LocalDateTime.now().isBefore(endtime)) {
+//				if ((System.currentTimeMillis() % 1000) == 0) {
+//					file.writeBytes(megString);
+////					System.out.println("writing " + megString.getBytes().length + "bytes");
+//					Thread.sleep(1);
+////					readFile.readLine();
+//				}
+//			}
+//			readFile.close();
+//			file.close();
+//		} catch (IOException e) {
+//			System.out.println("An error occurred.");
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		myObj.deleteOnExit();
+//	}
 
 //	public static void DiskLoad(int duration, double loadinMBs) {
 //		LocalDateTime endtime = LocalDateTime.now().plusSeconds(duration);
