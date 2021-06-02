@@ -45,6 +45,7 @@ public class DiskWriter extends Loader {
 			if ((targetspace - usedspace) > 0) {
 				file.setLength((long) targetspace - usedspace);
 				System.out.println("Injected hogger.txt of " + Math.round(file.length() / Math.pow(2, 20)) + "MB");
+				file.close();
 				totalspace = diskpartition.getTotalSpace();
 				freespace = diskpartition.getUsableSpace();
 				usedspace = totalspace - freespace;
@@ -53,7 +54,6 @@ public class DiskWriter extends Loader {
 				System.out.println("Already utilizing more than specified.");
 			}
 			Thread.sleep(this.duration * 1000);
-			file.close();
 			myObj.delete();
 		} catch (IOException e) {
 			System.out.println("An error occurred.");
