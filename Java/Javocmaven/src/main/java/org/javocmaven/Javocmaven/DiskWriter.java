@@ -24,55 +24,31 @@ public class DiskWriter extends Loader {
 		}
 	}
 
-//	public static void main(String[] args) {
-//		int duration = 20;
-////		int writeInstance = (int) (1024 * Math.pow(2, 20));
-////		byte bytes[] = new byte[writeInstance];
-//		LocalDateTime endtime = LocalDateTime.now().plusSeconds(duration);
-//		File myObj = new File("hogger.txt");
-//		char[] chars = new char[(1048576 * 500) - 2];
-//		Arrays.fill(chars, 'f');
-//		String megString = new String(chars) + "\n";
-//
-//		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
-//			RandomAccessFile readFile = new RandomAccessFile(myObj, "rws");
-//			file.seek(0);
-//			readFile.seek(0);
-//			while (LocalDateTime.now().isBefore(endtime)) {
-//				if ((System.currentTimeMillis() % 1000) == 0) {
-//					file.writeBytes(megString);
-////					readFile.readLine();
-//				}
-//			}
-//			file.close();
-//		} catch (IOException e) {
-//			System.out.println("An error occurred.");
-//			e.printStackTrace();
-//		}
-//		myObj.deleteOnExit();
-//
-//	}
 	public void load() {
 		System.out.println("Utilizing " + (int) this.utilization + "% of current partition.");
+
 		File diskpartition = new File("/");
 		long totalspace = diskpartition.getTotalSpace();
 		long freespace = diskpartition.getUsableSpace();
 		long usedspace = totalspace - freespace;
+		double usedpercent = (double) usedspace / totalspace * 100; 
 		double targetspace = this.utilization / 100 * totalspace;
-		File myObj = new File("hogger");
+
+		File myObj = new File("hogger.txt");
 		myObj.deleteOnExit();
 
-		System.out.println("Total space: " + Math.toIntExact((long) (totalspace / Math.pow(2, 20)))  + "MB\tUsed space: "
-				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB\tTarget space: " + Math.toIntExact((long) (targetspace / Math.pow(2, 20))) + "MB.");
+		System.out.println("Total space(100%): " + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB\tUsed space(" + Math.round(usedpercent) + "%): "
+				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB\tTarget space" + Math.round(this.utilization) + "%): "
+				+ Math.toIntExact((long) (targetspace / Math.pow(2, 20))) + "MB.");
 
 		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
 			if ((targetspace - usedspace) > 0) {
 				file.setLength((long) targetspace - usedspace);
+				file.close();
 				totalspace = diskpartition.getTotalSpace();
 				freespace = diskpartition.getUsableSpace();
 				usedspace = totalspace - freespace;
-				double usedpercent = (double) usedspace / totalspace * 100;
-				System.out.println("Current utilization: " + Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB (" + Math.round(usedpercent) + "%)");
+				usedpercent = (double) usedspace / totalspace * 100;
 			} else {
 				System.out.println("Already utilizing more than specified.");
 			}
