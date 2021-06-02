@@ -37,14 +37,14 @@ public class DiskWriter extends Loader {
 		File myObj = new File("hogger.txt");
 		myObj.deleteOnExit();
 
-		System.out.println("Total space(100%): " + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB\tUsed space(" + Math.round(usedpercent) + "%): "
-				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB\tTarget space" + Math.round(this.utilization) + "%): "
+		System.out.println("Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB   Used space(" + Math.round(usedpercent) + "%):"
+				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB   Target space(" + Math.round(this.utilization) + "%):"
 				+ Math.toIntExact((long) (targetspace / Math.pow(2, 20))) + "MB.");
 
 		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
 			if ((targetspace - usedspace) > 0) {
 				file.setLength((long) targetspace - usedspace);
-				file.close();
+				System.out.println("Injected hogger.txt of " + Math.round(file.length() / Math.pow(2, 20)) + "MB");
 				totalspace = diskpartition.getTotalSpace();
 				freespace = diskpartition.getUsableSpace();
 				usedspace = totalspace - freespace;
@@ -53,6 +53,7 @@ public class DiskWriter extends Loader {
 				System.out.println("Already utilizing more than specified.");
 			}
 			Thread.sleep(this.duration * 1000);
+			file.close();
 			myObj.delete();
 		} catch (IOException e) {
 			System.out.println("An error occurred.");
