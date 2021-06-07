@@ -1,5 +1,7 @@
 package org.javocmaven.Javocmaven;
 
+import java.util.Timer;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -19,7 +21,11 @@ public class MainMenu {
 		options.addOption(Option.builder("mem").desc("Memory Leaker").hasArgs().build());
 		options.addOption(Option.builder("disk").desc("Disk Hogger").hasArgs().build());
 		options.addOption(Option.builder("net").desc("Network Latency Injector").hasArgs().build());
-
+		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
+		
+		Timer timer = new Timer();
+		timer.schedule(new Logger(), 0, 1000);
+		
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine cmd = parser.parse(options, args);
