@@ -57,7 +57,6 @@ public class DiskWriter extends Loader {
 		if (difference > 0) {
 			//execute code here
 			String startcommand = "fallocate -l " + Math.round(difference) + " hogger.txt";
-			String endcommand = "rm -f hogger.txt";
 			try {
 				this.execCommand(new ProcessBuilder("bash", "-c", startcommand));
 				System.out.println("Injected hogger.txt of " + Math.round(difference / Math.pow(2, 20)) + "MB");

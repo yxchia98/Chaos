@@ -1,6 +1,5 @@
 package org.javocmaven.Javocmaven;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class BusyThread extends Thread {

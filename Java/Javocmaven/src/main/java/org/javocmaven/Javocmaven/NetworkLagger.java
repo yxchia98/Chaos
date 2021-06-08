@@ -3,6 +3,8 @@ package org.javocmaven.Javocmaven;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 public class NetworkLagger extends Loader {
 
@@ -41,12 +43,18 @@ public class NetworkLagger extends Loader {
 	}
 
 	private void loadWindows() {
-		String currentdir = System.getProperty("user.dir");
+//		String currentdir = System.getProperty("user.dir");
+		String currentdir = "\\";
+		try {
+			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().toString();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
 		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
 		String stop = "Stop-Process -Name \"clumsy\"";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
 		String arguments = "--filter `\"outbound`\" --lag on --lag-time " + this.utilization;
-		System.out.println(dir);
+//		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", dir, "\n",
 					"Start-Process -WindowStyle Hidden .\\clumsy.exe -ArgumentList \"\"" + arguments + "\"\"", "\n",

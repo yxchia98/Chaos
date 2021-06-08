@@ -1,14 +1,12 @@
 package org.javocmaven.Javocmaven;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.lang.management.ManagementFactory;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 public class Test {
-	public static void main(String[] args) throws IOException, InterruptedException {
-		
+	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+		String dir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().toString();
+		System.out.println(dir);
 	}
 }
