@@ -21,7 +21,8 @@ public class MainMenu {
 		options.addOption(Option.builder("cpu").desc("CPU Loader").hasArgs().build());
 		options.addOption(Option.builder("mem").desc("Memory Leaker").hasArgs().build());
 		options.addOption(Option.builder("disk").desc("Disk Hogger").hasArgs().build());
-		options.addOption(Option.builder("net").desc("Network Latency Injector").hasArgs().build());
+		options.addOption(Option.builder("netlag").desc("Network Latency Injector").hasArgs().build());
+		options.addOption(Option.builder("netnoise").desc("Network Packet Duplicator").hasArgs().build());
 		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
 		ArrayList<BusyThread> threadArray = new ArrayList<BusyThread>();
 
@@ -42,8 +43,10 @@ public class MainMenu {
 					executeLoad(new MemoryLeaker(a.getValues()));
 				} else if (a.getOpt().equals("disk")) {
 					executeLoad(new DiskWriter(a.getValues()));
-				} else if (a.getOpt().equals("net")) {
-					executeLoad(new NetworkLagger(a.getValues()));
+				} else if (a.getOpt().equals("netlag")) {
+					executeLoad(new NetworkLagger(a.getValues(), "lag"));
+				} else if (a.getOpt().equals("netnoise")) {
+					executeLoad(new NetworkLagger(a.getValues(), "noise"));
 				} else {
 					System.out.println("Not enough arguments entered.");
 				}

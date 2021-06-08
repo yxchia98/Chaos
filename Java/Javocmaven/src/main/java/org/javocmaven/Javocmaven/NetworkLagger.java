@@ -10,13 +10,23 @@ public class NetworkLagger extends Loader {
 
 	int duration;
 	double utilization;
+	String type = "lag";
 
 	public NetworkLagger(int duration, double utilization) {
 		this.duration = duration;
 		this.utilization = utilization;
 	}
 	
-	public NetworkLagger(String[] arguments) {
+	public NetworkLagger(String[] arguments, String type) {
+		if (type.equals("lag")) {
+			this.type = type;
+		}
+		else if (type.equals("noise")) {
+			this.type = type;
+		}
+		else {
+			
+		}
 		if(arguments.length >= 2) {
 			this.duration = Integer.parseInt(arguments[0]);
 			this.utilization = Double.parseDouble(arguments[1]);
@@ -31,18 +41,31 @@ public class NetworkLagger extends Loader {
 	public void load() {
 		String operatingSystem = System.getProperty("os.name");
 		if(operatingSystem.contains("Windows")) {
-			System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration + "s (Windows machine)");
-			this.loadWindows();
+			if (this.type.equals("lag")) {
+				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration + "s (Windows machine)");
+				this.lagWindows();
+			}
+			else if (this.type.equals("noise")) {
+				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for " + this.duration + "s (Windows machine)");
+				this.noiseWindows();
+			}
 		}
 		else if (operatingSystem.contains("Linux")) {
-			System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration + "s (Linux machine)");
-			this.loadLinux();
+			if (this.type.equals("lag")) {
+				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration + "s (Linux machine)");
+				this.lagLinux();
+			}
+			else if (this.type.equals("noise")) {
+				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for " + this.duration + "s (Linux machine)");
+				this.noiseLinux();
+			}
+
 		}
 		
 
 	}
 
-	private void loadWindows() {
+	private void lagWindows() {
 //		String currentdir = System.getProperty("user.dir");
 		String currentdir = "\\";
 		try {
@@ -67,7 +90,7 @@ public class NetworkLagger extends Loader {
 		}
 	}
 
-	private void loadLinux() {
+	private void lagLinux() {
 		String startcommand = "tc qdisc add dev ens192 root netem delay " + this.utilization + "ms";
 		String endcommand = "tc qdisc del dev ens192 root netem delay " + this.utilization + "ms";
 		try {
@@ -102,7 +125,18 @@ public class NetworkLagger extends Loader {
 			e.printStackTrace();
 		}
 	}
-
+	
+	private void noiseLinux() {
+		String startcommand = "tc qdisc add dev ens192 root netem delay " + this.utilization + "ms";
+		String endcommand = "tc qdisc del dev ens192 root netem delay " + this.utilization + "ms";
+		try {
+			execCommand(new ProcessBuilder("bash", "-c", startcommand));
+			Thread.sleep(duration * 1000);
+			execCommand(new ProcessBuilder("bash", "-c", endcommand));
+		}catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 //	public static void induceLag(int duration, double latency) {
 //		String currentdir = System.getProperty("user.dir");
 //		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
