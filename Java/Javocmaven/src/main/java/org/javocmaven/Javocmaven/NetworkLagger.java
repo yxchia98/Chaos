@@ -51,13 +51,15 @@ public class NetworkLagger extends Loader {
 			e1.printStackTrace();
 		}
 		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
-		String stop = "Stop-Process -Name \"clumsy\"";
+		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
+		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
-		String arguments = "--filter `\"outbound`\" --lag on --lag-time " + this.utilization;
-//		System.out.println(dir);
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --lag on --lag-time " + this.utilization;
+		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
+		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", dir, "\n",
-					"Start-Process -WindowStyle Hidden .\\clumsy.exe -ArgumentList \"\"" + arguments + "\"\"", "\n",
+					start, "\n",
 					lagtime, "\n", stop));
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
@@ -73,6 +75,30 @@ public class NetworkLagger extends Loader {
 			Thread.sleep(duration * 1000);
 			execCommand(new ProcessBuilder("bash", "-c", endcommand));
 		}catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void noiseWindows() {
+		String currentdir = "\\";
+		try {
+			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().toString();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
+		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
+		String stop = "Stop-Process -Name 'clumsy'";
+		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-chance 100 --duplicate-count " + this.utilization;
+		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
+		System.out.println(dir);
+		try {
+			execCommand(new ProcessBuilder("powershell.exe", dir, "\n",
+					start, "\n",
+					lagtime, "\n", stop));
+		} catch (IOException e) {
+			System.out.println("Unable to execute command.");
 			e.printStackTrace();
 		}
 	}
