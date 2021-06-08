@@ -21,8 +21,8 @@ public class Logger extends TimerTask {
 		
 		System.out.println("LOGGED ON " + ts);
 		
-		System.out.println("CPU load: " + oslog.getCpuLoad());
-		logtxt += "CPU load: " + oslog.getCpuLoad() + "\n";
+		System.out.println("CPU load: " + Math.round(oslog.getCpuLoad() * 100 ) + "%");
+		logtxt += "CPU load: " + Math.round(oslog.getCpuLoad() * 100 ) + "%\n";
 
 
 		System.out.println("Total Memory(MB): " + oslog.getTotalMemorySize() / Math.pow(2, 20));

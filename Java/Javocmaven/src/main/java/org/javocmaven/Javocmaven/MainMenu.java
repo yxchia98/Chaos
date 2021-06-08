@@ -1,5 +1,6 @@
 package org.javocmaven.Javocmaven;
 
+import java.util.ArrayList;
 import java.util.Timer;
 
 import org.apache.commons.cli.CommandLine;
@@ -14,7 +15,7 @@ public class MainMenu {
 	private static void executeLoad(Loader loadObj) {
 		loadObj.load();
 	}
-	
+
 	public static void main(String[] args) {
 		Options options = new Options();
 		options.addOption(Option.builder("cpu").desc("CPU Loader").hasArgs().build());
@@ -22,34 +23,45 @@ public class MainMenu {
 		options.addOption(Option.builder("disk").desc("Disk Hogger").hasArgs().build());
 		options.addOption(Option.builder("net").desc("Network Latency Injector").hasArgs().build());
 		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
-		
+		ArrayList<BusyThread> threadArray = new ArrayList<BusyThread>();
+
 		Timer timer = new Timer();
 		timer.schedule(new Logger(), 0, 1000);
-		
+
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine cmd = parser.parse(options, args);
 			Option[] parsedoptions = cmd.getOptions();
 			for (Option a : parsedoptions) {
-				if(a.getOpt().equals("cpu")) {
-					executeLoad(new CpuLoader(a.getValues()));
-				}
-				else if(a.getOpt().equals("mem")) {
+				if (a.getOpt().equals("cpu")) {
+					CpuLoader cpuloader = new CpuLoader(a.getValues());
+//					executeLoad(new CpuLoader(a.getValues()));
+					executeLoad(cpuloader);
+					threadArray = cpuloader.getThreadArray();
+				} else if (a.getOpt().equals("mem")) {
 					executeLoad(new MemoryLeaker(a.getValues()));
-				}
-				else if(a.getOpt().equals("disk")){
+				} else if (a.getOpt().equals("disk")) {
 					executeLoad(new DiskWriter(a.getValues()));
-				}
-				else if(a.getOpt().equals("net")) {
+				} else if (a.getOpt().equals("net")) {
 					executeLoad(new NetworkLagger(a.getValues()));
-				}
-				else {
+				} else {
 					System.out.println("Not enough arguments entered.");
 				}
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+
+		for (int i = 0; i < threadArray.size(); i++) {
+			try {
+				threadArray.get(i).join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		timer.cancel();
+		timer.purge();
+
 	}
 
 //	public static void main(String[] args) {
