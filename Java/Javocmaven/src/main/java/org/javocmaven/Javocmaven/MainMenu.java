@@ -23,11 +23,12 @@ public class MainMenu {
 		options.addOption(Option.builder("disk").desc("Disk Hogger").hasArgs().build());
 		options.addOption(Option.builder("netlag").desc("Network Latency Injector").hasArgs().build());
 		options.addOption(Option.builder("netnoise").desc("Network Packet Duplicator").hasArgs().build());
+		options.addOption(Option.builder("netdrop").desc("Network Packet Dropper").hasArgs().build());
 		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
 		ArrayList<BusyThread> threadArray = new ArrayList<BusyThread>();
 
 		Timer timer = new Timer();
-		timer.schedule(new Logger(), 0, 1000);
+		timer.schedule(new Logger(), 100, 5000);
 
 		CommandLineParser parser = new DefaultParser();
 		try {
@@ -47,6 +48,8 @@ public class MainMenu {
 					executeLoad(new NetworkLagger(a.getValues(), "lag"));
 				} else if (a.getOpt().equals("netnoise")) {
 					executeLoad(new NetworkLagger(a.getValues(), "noise"));
+				} else if (a.getOpt().equals("netdrop")) {
+					executeLoad(new NetworkLagger(a.getValues(), "drop"));
 				} else {
 					System.out.println("Not enough arguments entered.");
 				}

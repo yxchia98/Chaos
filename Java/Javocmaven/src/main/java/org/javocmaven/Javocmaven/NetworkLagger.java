@@ -16,52 +16,53 @@ public class NetworkLagger extends Loader {
 		this.duration = duration;
 		this.utilization = utilization;
 	}
-	
+
 	public NetworkLagger(String[] arguments, String type) {
-		if (type.equals("lag")) {
+		if (type.equals("lag") || type.equals("noise") || type.equals("drop")) {
 			this.type = type;
 		}
-		else if (type.equals("noise")) {
-			this.type = type;
-		}
-		else {
-			
-		}
-		if(arguments.length >= 2) {
+
+		if (arguments.length >= 2) {
 			this.duration = Integer.parseInt(arguments[0]);
 			this.utilization = Double.parseDouble(arguments[1]);
-		}
-		else if(arguments.length == 1) {
+		} else if (arguments.length == 1) {
 			this.duration = Integer.parseInt(arguments[0]);
-		}
-		else {
+		} else {
 		}
 	}
 
 	public void load() {
 		String operatingSystem = System.getProperty("os.name");
-		if(operatingSystem.contains("Windows")) {
+		if (operatingSystem.contains("Windows")) {
 			if (this.type.equals("lag")) {
-				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration + "s (Windows machine)");
+				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration
+						+ "s (Windows machine)");
 				this.lagWindows();
-			}
-			else if (this.type.equals("noise")) {
-				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for " + this.duration + "s (Windows machine)");
+			} else if (this.type.equals("noise")) {
+				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for "
+						+ this.duration + "s (Windows machine)");
 				this.noiseWindows();
+			} else if (this.type.equals("drop")) {
+				System.out.println("Injecting network packet loss of " + this.utilization + "%, for " + this.duration
+						+ "s (Windows machine)");
+				this.dropWindows();
 			}
-		}
-		else if (operatingSystem.contains("Linux")) {
+		} else if (operatingSystem.contains("Linux")) {
 			if (this.type.equals("lag")) {
-				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration + "s (Linux machine)");
+				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration
+						+ "s (Linux machine)");
 				this.lagLinux();
-			}
-			else if (this.type.equals("noise")) {
-				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for " + this.duration + "s (Linux machine)");
+			} else if (this.type.equals("noise")) {
+				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for "
+						+ this.duration + "s (Linux machine)");
 				this.noiseLinux();
+			} else if (this.type.equals("drop")) {
+				System.out.println("Injecting network packet loss of " + this.utilization + "%, for " + this.duration
+						+ "s (Linux machine)");
+				this.dropLinux();
 			}
 
 		}
-		
 
 	}
 
@@ -69,7 +70,8 @@ public class NetworkLagger extends Loader {
 //		String currentdir = System.getProperty("user.dir");
 		String currentdir = "\\";
 		try {
-			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().toString();
+			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+					.getParent().toString();
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
@@ -81,9 +83,7 @@ public class NetworkLagger extends Loader {
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
 		System.out.println(dir);
 		try {
-			execCommand(new ProcessBuilder("powershell.exe", dir, "\n",
-					start, "\n",
-					lagtime, "\n", stop));
+			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
 			e.printStackTrace();
@@ -97,15 +97,16 @@ public class NetworkLagger extends Loader {
 			execCommand(new ProcessBuilder("bash", "-c", startcommand));
 			Thread.sleep(duration * 1000);
 			execCommand(new ProcessBuilder("bash", "-c", endcommand));
-		}catch (IOException | InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void noiseWindows() {
 		String currentdir = "\\";
 		try {
-			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().toString();
+			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+					.getParent().toString();
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
@@ -113,46 +114,65 @@ public class NetworkLagger extends Loader {
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
-		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-chance 100 --duplicate-count " + this.utilization;
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-chance 100 --duplicate-count "
+				+ this.utilization;
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
 		System.out.println(dir);
 		try {
-			execCommand(new ProcessBuilder("powershell.exe", dir, "\n",
-					start, "\n",
-					lagtime, "\n", stop));
+			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void noiseLinux() {
-		String startcommand = "tc qdisc add dev ens192 root netem delay " + this.utilization + "ms";
-		String endcommand = "tc qdisc del dev ens192 root netem delay " + this.utilization + "ms";
+		String startcommand = "tc qdisc add dev ens192 root netem duplicate " + this.utilization + "%";
+		String endcommand = "tc qdisc del dev ens192 root netem duplicate " + this.utilization + "%";
 		try {
 			execCommand(new ProcessBuilder("bash", "-c", startcommand));
 			Thread.sleep(duration * 1000);
 			execCommand(new ProcessBuilder("bash", "-c", endcommand));
-		}catch (IOException | InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-//	public static void induceLag(int duration, double latency) {
-//		String currentdir = System.getProperty("user.dir");
-//		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
-//		String stop = "Stop-Process -Name \"clumsy\"";
-//		String lagtime = "Start-Sleep -s " + Integer.toString(duration);
-//		String arguments = "--filter `\"outbound`\" --lag on --lag-time " + latency ;
-//		System.out.println(dir);
-//		try {
-//			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", 
-//					"Start-Process -WindowStyle Hidden .\\clumsy.exe -ArgumentList \"\"" + arguments + "\"\"", "\n", 
-//					lagtime, "\n", stop));
-//		} catch (IOException e) {
-//			System.out.println("Unable to execute command.");
-//			e.printStackTrace();
-//		}
-//	}
+
+	private void dropWindows() {
+		String currentdir = "\\";
+		try {
+			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+					.getParent().toString();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
+		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
+		String stop = "Stop-Process -Name 'clumsy'";
+		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --drop on --drop-outbound on --drop-inbound off --drop-chance "
+				+ this.utilization;
+		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
+		System.out.println(dir);
+		try {
+			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
+		} catch (IOException e) {
+			System.out.println("Unable to execute command.");
+			e.printStackTrace();
+		}
+	}
+
+	private void dropLinux() {
+		String startcommand = "tc qdisc add dev ens192 root netem loss " + this.utilization + "%";
+		String endcommand = "tc qdisc del dev ens192 root netem loss " + this.utilization + "%";
+		try {
+			execCommand(new ProcessBuilder("bash", "-c", startcommand));
+			Thread.sleep(duration * 1000);
+			execCommand(new ProcessBuilder("bash", "-c", endcommand));
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void execCommand(ProcessBuilder builder) throws IOException {
 		builder.redirectErrorStream(true);

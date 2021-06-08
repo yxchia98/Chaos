@@ -18,29 +18,34 @@ public class Logger extends TimerTask {
 		double usedpercent = (double) usedspace / totalspace * 100;
 		com.sun.management.OperatingSystemMXBean oslog = (com.sun.management.OperatingSystemMXBean) ManagementFactory
 				.getOperatingSystemMXBean();
-		
-		System.out.println("LOGGED ON " + ts);
-		
-		System.out.println("CPU load: " + Math.round(oslog.getCpuLoad() * 100 ) + "%");
-		logtxt += "CPU load: " + Math.round(oslog.getCpuLoad() * 100 ) + "%\n";
 
+//		System.out.println("LOGGED ON " + ts);
+		
+		logtxt += "Platform: " + System.getProperty("os.name") + "\n";
 
-		System.out.println("Total Memory(MB): " + oslog.getTotalMemorySize() / Math.pow(2, 20));
-		System.out.println("Free Memory(MB): " + oslog.getFreeMemorySize() / Math.pow(2, 20));
-		System.out.println(
-				"Used Memory(MB): " + (oslog.getTotalMemorySize() - oslog.getFreeMemorySize()) / Math.pow(2, 20));
-		System.out.println("JVM Allocated Memory(MB): " + (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20));
+//		System.out.println("CPU load: " + Math.round(oslog.getCpuLoad() * 100 ) + "%");
+		if (Math.round(oslog.getCpuLoad() * 100) == -1.0) {
+			logtxt += "CPU load: 0%\n";
+		} else {
+			logtxt += "CPU load: " + Math.round(oslog.getCpuLoad() * 100) + "%\n";
+		}
+
+//		System.out.println("Total Memory(MB): " + oslog.getTotalMemorySize() / Math.pow(2, 20));
+//		System.out.println("Free Memory(MB): " + oslog.getFreeMemorySize() / Math.pow(2, 20));
+//		System.out.println(
+//				"Used Memory(MB): " + (oslog.getTotalMemorySize() - oslog.getFreeMemorySize()) / Math.pow(2, 20));
+//		System.out.println("JVM Allocated Memory(MB): " + (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20));
 		logtxt += "Total Memory(MB): " + oslog.getTotalMemorySize() / Math.pow(2, 20) + "\n";
 		logtxt += "Free Memory(MB): " + oslog.getFreeMemorySize() / Math.pow(2, 20) + "\n";
-		logtxt += "Used Memory(MB): " + (oslog.getTotalMemorySize() - oslog.getFreeMemorySize()) / Math.pow(2, 20) + "\n";
+		logtxt += "Used Memory(MB): " + (oslog.getTotalMemorySize() - oslog.getFreeMemorySize()) / Math.pow(2, 20)
+				+ "\n";
 		logtxt += "JVM Allocated Memory(MB): " + (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20) + "\n";
 
-		System.out.println("Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20)))
-				+ "MB   Used space(" + Math.round(usedpercent) + "%):"
-				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB");
-		logtxt += "Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20)))
-		+ "MB   Used space(" + Math.round(usedpercent) + "%):"
-		+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB\n\n";
+//		System.out.println("Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20)))
+//				+ "MB   Used space(" + Math.round(usedpercent) + "%):"
+//				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB");
+		logtxt += "Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB   Used space("
+				+ Math.round(usedpercent) + "%):" + Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB\n\n";
 
 		File javoclog = new File("javoc.log");
 		FileOutputStream fos;

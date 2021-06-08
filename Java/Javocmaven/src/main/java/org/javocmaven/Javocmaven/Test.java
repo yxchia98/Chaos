@@ -18,8 +18,8 @@ public class Test {
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(5);
-		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-chance 100 --duplicate-count " + 50;
-		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-inbound on --duplicate-outbound off --duplicate-chance 100 --duplicate-count " + 50;
+		String start = "Start-Process " + appPath + " -ArgumentList '" + arguments + "'";
 		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", dir, "\n",
