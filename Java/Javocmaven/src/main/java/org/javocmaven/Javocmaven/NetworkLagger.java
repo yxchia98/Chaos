@@ -39,7 +39,7 @@ public class NetworkLagger extends Loader {
 						+ "s (Windows machine)");
 				this.lagWindows();
 			} else if (this.type.equals("noise")) {
-				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for "
+				System.out.println("Injecting network packet duplication of " + this.utilization + "%, for "
 						+ this.duration + "s (Windows machine)");
 				this.noiseWindows();
 			} else if (this.type.equals("drop")) {
@@ -53,7 +53,7 @@ public class NetworkLagger extends Loader {
 						+ "s (Linux machine)");
 				this.lagLinux();
 			} else if (this.type.equals("noise")) {
-				System.out.println("Injecting network packet duplication of " + this.utilization + "counts, for "
+				System.out.println("Injecting network packet duplication of " + this.utilization + "%, for "
 						+ this.duration + "s (Linux machine)");
 				this.noiseLinux();
 			} else if (this.type.equals("drop")) {
@@ -79,9 +79,9 @@ public class NetworkLagger extends Loader {
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
-		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --lag on --lag-time " + this.utilization;
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --lag on --lag-inbound off --lag-outbound on --lag-time " + this.utilization;
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
-		System.out.println(dir);
+//		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
@@ -114,10 +114,10 @@ public class NetworkLagger extends Loader {
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
-		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-chance 100 --duplicate-count "
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-inbound off --duplicate-outbound on --duplicate-count 2 --duplicate-chance "
 				+ this.utilization;
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
-		System.out.println(dir);
+//		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
@@ -153,7 +153,7 @@ public class NetworkLagger extends Loader {
 		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --drop on --drop-outbound on --drop-inbound off --drop-chance "
 				+ this.utilization;
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
-		System.out.println(dir);
+//		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
