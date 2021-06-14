@@ -32,10 +32,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     ;;
 
-  -cpu-seconds)
+  -cpus)
     # echo "Loading CPU"
     # echo "-cpu $2 $3"
-    parameters+="-cpu-seconds $2 $3 "
+    parameters+="-cpus $2 $3 "
     shift
     shift
     ;;
@@ -47,10 +47,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     shift;;
 
-   -mem-seconds)
+   -mems)
     # echo "Loading Memory"
     # echo "-mem $2 $3"
-    parameters+="-mem-seconds $2 $3 "
+    parameters+="-mems $2 $3 "
     shift
     shift;;   
 
@@ -61,10 +61,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     shift;;
 
-  -disk-seconds)
+  -disks)
     # echo "Loading Disk"
     # echo "-disk $2 $3"
-    parameters+="-disk-seconds $2 $3 "
+    parameters+="-disks $2 $3 "
     shift
     shift;;
 
@@ -75,10 +75,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     shift;;
 
-  -netlag-seconds)
+  -netlags)
     # echo "Loading Network Latency Injector"
     # echo "-net $2 $3"
-    parameters+="-netlag-seconds $2 $3 "
+    parameters+="-netlags $2 $3 "
     shift
     shift;;
 
@@ -89,10 +89,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     shift;;
 
-  -netnoise-seconds)
+  -netnoises)
     # echo "Loading Network Packet Duplicator"
     # echo "-net $2 $3"
-    parameters+="-netnoise-seconds $2 $3 "
+    parameters+="-netnoises $2 $3 "
     shift
     shift;;
 
@@ -103,10 +103,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     shift;;
 
-  -netdrop-seconds)
+  -netdrops)
     # echo "Loading Network Packet Dropper"
     # echo "-net $2 $3"
-    parameters+="-netdrop-seconds $2 $3 "
+    parameters+="-netdrops $2 $3 "
     shift
     shift;;
 
@@ -117,10 +117,10 @@ while [ -n "$1" ]; do # while loop starts
     shift
     shift;;
 
-  -netlimit-seconds)
+  -netlimits)
     # echo "Loading Network Throttler"
     # echo "-net $2 $3"
-    parameters+="-netlimit-seconds $2 $3 "
+    parameters+="-netlimits $2 $3 "
     shift
     shift;;
 
@@ -129,9 +129,9 @@ while [ -n "$1" ]; do # while loop starts
     parameters+="-reboot $2"
     shift;;
 
-  -reboot-seconds)
+  -reboots)
     # echo "Loading Machine Reboot"
-    parameters+="-reboot-seconds $2"
+    parameters+="-reboots $2"
     shift;;
 
   *)
