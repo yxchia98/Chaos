@@ -6,36 +6,35 @@ import java.lang.management.*;
 public class MemoryLeaker extends Loader {
 	int duration = 5;
 	double utilization = 50;
-	
+
 	public MemoryLeaker(int duration, double utilization) {
 		this.duration = duration;
 		this.utilization = utilization;
 	}
-	
+
 	public MemoryLeaker(String arguments[]) {
-		if(arguments.length >= 2) {
+		if (arguments.length >= 2) {
 			this.duration = Integer.parseInt(arguments[0]);
 			this.utilization = Double.parseDouble(arguments[1]);
-		}
-		else if(arguments.length == 1) {
+		} else if (arguments.length == 1) {
 			this.duration = Integer.parseInt(arguments[0]);
-		}
-		else {
+		} else {
 		}
 	}
-	
+
 	public void load() {
-		com.sun.management.OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		com.sun.management.OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean) ManagementFactory
+				.getOperatingSystemMXBean();
 		System.out.println("Total Memory(MB): " + os.getTotalMemorySize() / Math.pow(2, 20));
 		System.out.println("Free Memory(MB): " + os.getFreeMemorySize() / Math.pow(2, 20));
 		System.out.println("Used Memory(MB): " + (os.getTotalMemorySize() - os.getFreeMemorySize()) / Math.pow(2, 20));
-		System.out.println("JVM Allocated Memory(MB): "+ (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20));
-		
+		System.out.println("JVM Allocated Memory(MB): " + (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20));
+
 		double targetMemory = this.utilization / 100 * os.getTotalMemorySize();
 		System.out.println("Target Memory usage: " + targetMemory / Math.pow(2, 20));
 		ArrayList<char[]> hog = new ArrayList<char[]>();
 		Runtime.getRuntime().gc();
-		while((os.getTotalMemorySize() - os.getFreeMemorySize()) < targetMemory) {
+		while ((os.getTotalMemorySize() - os.getFreeMemorySize()) < targetMemory) {
 			hog.add(new char[524288]);
 		}
 		System.out.println();
@@ -51,19 +50,20 @@ public class MemoryLeaker extends Loader {
 		System.out.println("Successfully executed.");
 
 	}
-	
+
 	public static void testMem(int duration, double targetUtilization) {
-		com.sun.management.OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		com.sun.management.OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean) ManagementFactory
+				.getOperatingSystemMXBean();
 		System.out.println("Total Memory: " + os.getTotalMemorySize() / Math.pow(2, 20));
 		System.out.println("Free Memory: " + os.getFreeMemorySize() / Math.pow(2, 20));
 		System.out.println("Used Memory: " + (os.getTotalMemorySize() - os.getFreeMemorySize()) / Math.pow(2, 20));
-		System.out.println("JVM Allocated Memory: "+ (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20));
-		
+		System.out.println("JVM Allocated Memory: " + (Runtime.getRuntime().maxMemory()) / Math.pow(2, 20));
+
 		double targetMemory = targetUtilization / 100 * os.getTotalMemorySize();
 		System.out.println("Target Memory usage: " + targetMemory / Math.pow(2, 20));
 		ArrayList<char[]> hog = new ArrayList<char[]>();
 		Runtime.getRuntime().gc();
-		while((os.getTotalMemorySize() - os.getFreeMemorySize()) < targetMemory) {
+		while ((os.getTotalMemorySize() - os.getFreeMemorySize()) < targetMemory) {
 			hog.add(new char[524288]);
 		}
 		System.out.println();

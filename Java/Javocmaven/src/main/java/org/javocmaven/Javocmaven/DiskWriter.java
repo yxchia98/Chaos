@@ -1,9 +1,7 @@
 package org.javocmaven.Javocmaven;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 
 public class DiskWriter extends Loader {
@@ -33,45 +31,47 @@ public class DiskWriter extends Loader {
 		long totalspace = diskpartition.getTotalSpace();
 		long freespace = diskpartition.getUsableSpace();
 		long usedspace = totalspace - freespace;
-		double usedpercent = (double) usedspace / totalspace * 100; 
+		double usedpercent = (double) usedspace / totalspace * 100;
 		double targetspace = this.utilization / 100 * totalspace;
 
 		File myObj = new File("hogger.txt");
 		myObj.deleteOnExit();
 
-		System.out.println("Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB   Used space(" + Math.round(usedpercent) + "%):"
-				+ Math.toIntExact((long) (usedspace / Math.pow(2, 20))) + "MB   Target space(" + Math.round(this.utilization) + "%):"
-				+ Math.toIntExact((long) (targetspace / Math.pow(2, 20))) + "MB.");
-		
+		System.out.println(
+				"Total space(100%):" + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB   Used space("
+						+ Math.round(usedpercent) + "%):" + Math.toIntExact((long) (usedspace / Math.pow(2, 20)))
+						+ "MB   Target space(" + Math.round(this.utilization) + "%):"
+						+ Math.toIntExact((long) (targetspace / Math.pow(2, 20))) + "MB.");
+
 		String operatingSystem = System.getProperty("os.name");
-		if(operatingSystem.contains("Windows")) {
+		if (operatingSystem.contains("Windows")) {
 			this.loadWindows(diskpartition, myObj, totalspace, freespace, usedspace, usedpercent, targetspace);
-		}
-		else if (operatingSystem.contains("Linux")) {
+		} else if (operatingSystem.contains("Linux")) {
 			this.loadLinux(diskpartition, myObj, totalspace, freespace, usedspace, usedpercent, targetspace);
 		}
 	}
-	
-	public void loadLinux(File diskpartition, File myObj, long totalspace, long freespace, long usedspace, double usedpercent, double targetspace) {
+
+	public void loadLinux(File diskpartition, File myObj, long totalspace, long freespace, long usedspace,
+			double usedpercent, double targetspace) {
 		double difference = targetspace - usedspace;
 		if (difference > 0) {
-			//execute code here
+			// execute code here
 			String startcommand = "fallocate -l " + Math.round(difference) + " hogger.txt";
 			try {
 				this.execCommand(new ProcessBuilder("bash", "-c", startcommand));
 				System.out.println("Injected hogger.txt of " + Math.round(difference / Math.pow(2, 20)) + "MB");
 				Thread.sleep(duration * 1000);
 				myObj.delete();
-			}catch (IOException | InterruptedException e) {
+			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
-		else {
+		} else {
 			System.out.println("Already utilizing more than specified.");
 		}
 	}
-	
-	public void loadWindows(File diskpartition, File myObj, long totalspace, long freespace, long usedspace, double usedpercent, double targetspace) {
+
+	public void loadWindows(File diskpartition, File myObj, long totalspace, long freespace, long usedspace,
+			double usedpercent, double targetspace) {
 		double difference = targetspace - usedspace;
 		try (RandomAccessFile file = new RandomAccessFile(myObj, "rws")) {
 			if (difference > 0) {
@@ -93,28 +93,6 @@ public class DiskWriter extends Loader {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	
-	
-	private void execCommand(ProcessBuilder builder) throws IOException {
-		builder.redirectErrorStream(true);
-		Process p = builder.start();
-		p.getOutputStream().close();
-		String line;
-		// Standard Output
-		BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		while ((line = stdout.readLine()) != null) {
-			System.out.println(line);
-		}
-		stdout.close();
-		// Standard Error
-		BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-		while ((line = stderr.readLine()) != null) {
-			System.out.println(line);
-		}
-		stderr.close();
-		p.destroy();
 	}
 
 //	public void load() {

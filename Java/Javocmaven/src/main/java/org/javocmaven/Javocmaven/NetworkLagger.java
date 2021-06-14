@@ -1,8 +1,6 @@
 package org.javocmaven.Javocmaven;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
@@ -18,9 +16,7 @@ public class NetworkLagger extends Loader {
 	}
 
 	public NetworkLagger(String[] arguments, String type) {
-		if (type.equals("lag") || type.equals("noise") || type.equals("drop")) {
-			this.type = type;
-		}
+		this.type = type;
 
 		if (arguments.length >= 2) {
 			this.duration = Integer.parseInt(arguments[0]);
@@ -46,6 +42,12 @@ public class NetworkLagger extends Loader {
 				System.out.println("Injecting network packet loss of " + this.utilization + "%, for " + this.duration
 						+ "s (Windows machine)");
 				this.dropWindows();
+			} else if (this.type.equals("throttle")) {
+				System.out.println("Throttling bandwith to " + this.utilization + "MBs, for " + this.duration
+						+ "s (Windows machine)");
+				this.throttleWindows();
+			} else {
+				System.out.println("Invalid Arguments entered");
 			}
 		} else if (operatingSystem.contains("Linux")) {
 			if (this.type.equals("lag")) {
@@ -60,6 +62,12 @@ public class NetworkLagger extends Loader {
 				System.out.println("Injecting network packet loss of " + this.utilization + "%, for " + this.duration
 						+ "s (Linux machine)");
 				this.dropLinux();
+			} else if (this.type.equals("throttle")) {
+				System.out.println("Throttling bandwith to " + this.utilization + "MBs, for " + this.duration
+						+ "s (Linux machine)");
+				this.throttleLinux();
+			} else {
+				System.out.println("Invalid Arguments entered");
 			}
 
 		}
@@ -67,7 +75,6 @@ public class NetworkLagger extends Loader {
 	}
 
 	private void lagWindows() {
-//		String currentdir = System.getProperty("user.dir");
 		String currentdir = "\\";
 		try {
 			currentdir = Paths.get(MainMenu.class.getProtectionDomain().getCodeSource().getLocation().toURI())
@@ -75,15 +82,15 @@ public class NetworkLagger extends Loader {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
-		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --lag on --lag-inbound off --lag-outbound on --lag-time " + this.utilization;
+		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --lag on --lag-inbound off --lag-outbound on --lag-time "
+				+ this.utilization;
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
 //		System.out.println(dir);
 		try {
-			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
+			execCommand(new ProcessBuilder("powershell.exe", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
 			e.printStackTrace();
@@ -110,7 +117,6 @@ public class NetworkLagger extends Loader {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
@@ -119,7 +125,7 @@ public class NetworkLagger extends Loader {
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
 //		System.out.println(dir);
 		try {
-			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
+			execCommand(new ProcessBuilder("powershell.exe", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
 			e.printStackTrace();
@@ -146,7 +152,6 @@ public class NetworkLagger extends Loader {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		String dir = "cd " + currentdir + "\\clumsy-0.2-win64\\";
 		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
@@ -155,7 +160,7 @@ public class NetworkLagger extends Loader {
 		String start = "Start-Process -WindowStyle Hidden " + appPath + " -ArgumentList '" + arguments + "'";
 //		System.out.println(dir);
 		try {
-			execCommand(new ProcessBuilder("powershell.exe", dir, "\n", start, "\n", lagtime, "\n", stop));
+			execCommand(new ProcessBuilder("powershell.exe", start, "\n", lagtime, "\n", stop));
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
 			e.printStackTrace();
@@ -174,24 +179,31 @@ public class NetworkLagger extends Loader {
 		}
 	}
 
-	private void execCommand(ProcessBuilder builder) throws IOException {
-		builder.redirectErrorStream(true);
-		Process p = builder.start();
-		p.getOutputStream().close();
-		String line;
-		// Standard Output
-		BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		while ((line = stdout.readLine()) != null) {
-			System.out.println(line);
+	private void throttleWindows() {
+		String start = "New-NetQosPolicy -Name 'JavocPolicy' -Default -ThrottleRateActionBitsPerSecond "
+				+ this.utilization + "MB";
+		String stop = "Remove-NetQosPolicy -Name 'JavocPolicy' -Confirm:$false";
+		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
+		try {
+			execCommand(new ProcessBuilder("powershell.exe", start, "\n", lagtime, "\n", stop));
+		} catch (IOException e) {
+			System.out.println("Unable to execute command.");
+			e.printStackTrace();
 		}
-		stdout.close();
-		// Standard Error
-		BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-		while ((line = stderr.readLine()) != null) {
-			System.out.println(line);
+	}
+
+	private void throttleLinux() {
+		double Mbits = this.utilization * Math.pow(2, 20) / Math.pow(10, 6);
+		String startcommand = "tc qdisc add dev ens192 root tbf rate " + Mbits + "Mbit burst " + Mbits
+				+ "mb latency 1000ms";
+		String endcommand = "tc qdisc del dev ens192 root tbf rate " + Mbits + "Mbit burst " + Mbits + "mb latency 1000ms";
+		try {
+			execCommand(new ProcessBuilder("bash", "-c", startcommand));
+			Thread.sleep(duration * 1000);
+			execCommand(new ProcessBuilder("bash", "-c", endcommand));
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
 		}
-		stderr.close();
-		p.destroy();
 	}
 
 }

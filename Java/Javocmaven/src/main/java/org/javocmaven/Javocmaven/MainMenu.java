@@ -24,11 +24,17 @@ public class MainMenu {
 		options.addOption(Option.builder("netlag").desc("Network Latency Injector").hasArgs().build());
 		options.addOption(Option.builder("netnoise").desc("Network Packet Duplicator").hasArgs().build());
 		options.addOption(Option.builder("netdrop").desc("Network Packet Dropper").hasArgs().build());
+		options.addOption(Option.builder("netlimit").desc("Network Traffic Throttler").hasArgs().build());
 		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
 		ArrayList<BusyThread> threadArray = new ArrayList<BusyThread>();
 
 		Timer timer = new Timer();
-		timer.schedule(new Logger(), 100, 5000);
+		timer.schedule(new Logger(), 0, 5000);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 
 		CommandLineParser parser = new DefaultParser();
 		try {
@@ -50,6 +56,10 @@ public class MainMenu {
 					executeLoad(new NetworkLagger(a.getValues(), "noise"));
 				} else if (a.getOpt().equals("netdrop")) {
 					executeLoad(new NetworkLagger(a.getValues(), "drop"));
+				} else if (a.getOpt().equals("netlimit")) {
+					executeLoad(new NetworkLagger(a.getValues(), "throttle"));
+				} else if (a.getOpt().equals("reboot")) {
+					executeLoad(new MachineReboot(a.getValues()));
 				} else {
 					System.out.println("Not enough arguments entered.");
 				}
@@ -64,6 +74,12 @@ public class MainMenu {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+		try {
+			timer.schedule(new Logger(), 1000);
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		timer.cancel();
 		timer.purge();
