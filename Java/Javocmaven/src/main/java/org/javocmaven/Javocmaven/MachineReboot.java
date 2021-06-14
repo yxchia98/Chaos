@@ -6,10 +6,18 @@ public class MachineReboot extends Loader{
 	
 	int duration = 0;
 	
-	public MachineReboot(String[] arguments) {
-		if (arguments.length >= 1) {
-			this.duration = Integer.parseInt(arguments[0]);
+	public MachineReboot(String[] arguments, String durationType) {
+		if (durationType.equals("seconds")) {
+			if (arguments.length >= 1) {
+				this.duration = Integer.parseInt(arguments[0]);
+			}
 		}
+		else {
+			if (arguments.length >= 1) {
+				this.duration = Integer.parseInt(arguments[0]) * 60;
+			}
+		}
+
 	}
 
 	public void load() {

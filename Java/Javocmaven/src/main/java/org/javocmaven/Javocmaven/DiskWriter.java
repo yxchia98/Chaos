@@ -14,14 +14,25 @@ public class DiskWriter extends Loader {
 		this.utilization = utilization;
 	}
 
-	public DiskWriter(String arguments[]) {
-		if (arguments.length >= 2) {
-			this.duration = Integer.parseInt(arguments[0]);
-			this.utilization = Double.parseDouble(arguments[1]);
-		} else if (arguments.length == 1) {
-			this.duration = Integer.parseInt(arguments[0]);
+	public DiskWriter(String arguments[], String durationType) {
+		if (durationType.equals("seconds")) {
+			if (arguments.length >= 2) {
+				this.duration = Integer.parseInt(arguments[0]);
+				this.utilization = Double.parseDouble(arguments[1]);
+			} else if (arguments.length == 1) {
+				this.duration = Integer.parseInt(arguments[0]);
+			} else {
+			}
 		} else {
+			if (arguments.length >= 2) {
+				this.duration = Integer.parseInt(arguments[0]) * 60;
+				this.utilization = Double.parseDouble(arguments[1]);
+			} else if (arguments.length == 1) {
+				this.duration = Integer.parseInt(arguments[0]) * 60;
+			} else {
+			}
 		}
+
 	}
 
 	public void load() {

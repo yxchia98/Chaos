@@ -15,16 +15,26 @@ public class NetworkLagger extends Loader {
 		this.utilization = utilization;
 	}
 
-	public NetworkLagger(String[] arguments, String type) {
+	public NetworkLagger(String[] arguments, String type, String durationType) {
 		this.type = type;
-
-		if (arguments.length >= 2) {
-			this.duration = Integer.parseInt(arguments[0]);
-			this.utilization = Double.parseDouble(arguments[1]);
-		} else if (arguments.length == 1) {
-			this.duration = Integer.parseInt(arguments[0]);
+		if (durationType.equals("seconds")) {
+			if (arguments.length >= 2) {
+				this.duration = Integer.parseInt(arguments[0]);
+				this.utilization = Double.parseDouble(arguments[1]);
+			} else if (arguments.length == 1) {
+				this.duration = Integer.parseInt(arguments[0]);
+			} else {
+			}
 		} else {
+			if (arguments.length >= 2) {
+				this.duration = Integer.parseInt(arguments[0]) * 60;
+				this.utilization = Double.parseDouble(arguments[1]);
+			} else if (arguments.length == 1) {
+				this.duration = Integer.parseInt(arguments[0]) * 60;
+			} else {
+			}
 		}
+
 	}
 
 	public void load() {
@@ -196,7 +206,8 @@ public class NetworkLagger extends Loader {
 		double Mbits = this.utilization * Math.pow(2, 20) / Math.pow(10, 6);
 		String startcommand = "tc qdisc add dev ens192 root tbf rate " + Mbits + "Mbit burst " + Mbits
 				+ "mb latency 1000ms";
-		String endcommand = "tc qdisc del dev ens192 root tbf rate " + Mbits + "Mbit burst " + Mbits + "mb latency 1000ms";
+		String endcommand = "tc qdisc del dev ens192 root tbf rate " + Mbits + "Mbit burst " + Mbits
+				+ "mb latency 1000ms";
 		try {
 			execCommand(new ProcessBuilder("bash", "-c", startcommand));
 			Thread.sleep(duration * 1000);

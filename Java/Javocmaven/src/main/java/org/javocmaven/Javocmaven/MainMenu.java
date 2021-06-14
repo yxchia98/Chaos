@@ -19,17 +19,29 @@ public class MainMenu {
 	public static void main(String[] args) {
 		Options options = new Options();
 		options.addOption(Option.builder("cpu").desc("CPU Loader").hasArgs().build());
+		options.addOption(Option.builder("cpu-seconds").desc("CPU Loader in Seconds").hasArgs().build());
 		options.addOption(Option.builder("mem").desc("Memory Leaker").hasArgs().build());
+		options.addOption(Option.builder("mem-seconds").desc("Memory Leaker in Seconds").hasArgs().build());
 		options.addOption(Option.builder("disk").desc("Disk Hogger").hasArgs().build());
+		options.addOption(Option.builder("disk-seconds").desc("Disk Hogger in Seconds").hasArgs().build());
 		options.addOption(Option.builder("netlag").desc("Network Latency Injector").hasArgs().build());
+		options.addOption(
+				Option.builder("netlag-seconds").desc("Network Latency Injector in Seconds").hasArgs().build());
 		options.addOption(Option.builder("netnoise").desc("Network Packet Duplicator").hasArgs().build());
+		options.addOption(
+				Option.builder("netnoise-seconds").desc("Network Packet Duplicator in seconds").hasArgs().build());
 		options.addOption(Option.builder("netdrop").desc("Network Packet Dropper").hasArgs().build());
+		options.addOption(
+				Option.builder("netdrop-seconds").desc("Network Packet Dropper in seconds").hasArgs().build());
 		options.addOption(Option.builder("netlimit").desc("Network Traffic Throttler").hasArgs().build());
+		options.addOption(
+				Option.builder("netlimit-seconds").desc("Network Traffic Throttler in seconds").hasArgs().build());
 		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
+		options.addOption(Option.builder("reboot-seconds").desc("Reboot current machine in seconds").build());
 		ArrayList<BusyThread> threadArray = new ArrayList<BusyThread>();
 
 		Timer timer = new Timer();
-		timer.schedule(new Logger(), 0, 5000);
+		timer.schedule(new Logger(), 0, 60000);
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
@@ -42,24 +54,41 @@ public class MainMenu {
 			Option[] parsedoptions = cmd.getOptions();
 			for (Option a : parsedoptions) {
 				if (a.getOpt().equals("cpu")) {
-					CpuLoader cpuloader = new CpuLoader(a.getValues());
-//					executeLoad(new CpuLoader(a.getValues()));
+					CpuLoader cpuloader = new CpuLoader(a.getValues(), "minutes");
+					executeLoad(cpuloader);
+					threadArray = cpuloader.getThreadArray();
+				} else if (a.getOpt().equals("cpu-seconds")) {
+					CpuLoader cpuloader = new CpuLoader(a.getValues(), "seconds");
 					executeLoad(cpuloader);
 					threadArray = cpuloader.getThreadArray();
 				} else if (a.getOpt().equals("mem")) {
-					executeLoad(new MemoryLeaker(a.getValues()));
+					executeLoad(new MemoryLeaker(a.getValues(), "minutes"));
+				} else if (a.getOpt().equals("mem-seconds")) {
+					executeLoad(new MemoryLeaker(a.getValues(), "seconds"));
 				} else if (a.getOpt().equals("disk")) {
-					executeLoad(new DiskWriter(a.getValues()));
+					executeLoad(new DiskWriter(a.getValues(), "minutes"));
+				} else if (a.getOpt().equals("disk-seconds")) {
+					executeLoad(new DiskWriter(a.getValues(), "seconds"));
 				} else if (a.getOpt().equals("netlag")) {
-					executeLoad(new NetworkLagger(a.getValues(), "lag"));
+					executeLoad(new NetworkLagger(a.getValues(), "lag", "minutes"));
+				} else if (a.getOpt().equals("netlag-seconds")) {
+					executeLoad(new NetworkLagger(a.getValues(), "lag", "seconds"));
 				} else if (a.getOpt().equals("netnoise")) {
-					executeLoad(new NetworkLagger(a.getValues(), "noise"));
+					executeLoad(new NetworkLagger(a.getValues(), "noise", "minutes"));
+				} else if (a.getOpt().equals("netnoise-seconds")) {
+					executeLoad(new NetworkLagger(a.getValues(), "noise", "seconds"));
 				} else if (a.getOpt().equals("netdrop")) {
-					executeLoad(new NetworkLagger(a.getValues(), "drop"));
+					executeLoad(new NetworkLagger(a.getValues(), "drop", "minutes"));
+				} else if (a.getOpt().equals("netdrop-seconds")) {
+					executeLoad(new NetworkLagger(a.getValues(), "drop", "seconds"));
 				} else if (a.getOpt().equals("netlimit")) {
-					executeLoad(new NetworkLagger(a.getValues(), "throttle"));
+					executeLoad(new NetworkLagger(a.getValues(), "throttle", "minutes"));
+				} else if (a.getOpt().equals("netlimit-seconds")) {
+					executeLoad(new NetworkLagger(a.getValues(), "throttle", "seconds"));
 				} else if (a.getOpt().equals("reboot")) {
-					executeLoad(new MachineReboot(a.getValues()));
+					executeLoad(new MachineReboot(a.getValues(), "minutes"));
+				} else if (a.getOpt().equals("reboot-seconds")) {
+					executeLoad(new MachineReboot(a.getValues(), "seconds"));
 				} else {
 					System.out.println("Not enough arguments entered.");
 				}
