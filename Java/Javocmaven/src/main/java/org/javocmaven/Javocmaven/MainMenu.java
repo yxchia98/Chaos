@@ -36,8 +36,8 @@ public class MainMenu {
 		options.addOption(Option.builder("netlimit").desc("Network Traffic Throttler").hasArgs().build());
 		options.addOption(
 				Option.builder("netlimits").desc("Network Traffic Throttler in seconds").hasArgs().build());
-		options.addOption(Option.builder("reboot").desc("Reboot current machine").build());
-		options.addOption(Option.builder("reboots").desc("Reboot current machine in seconds").build());
+		options.addOption(Option.builder("reboot").desc("Reboot current machine").hasArgs().build());
+		options.addOption(Option.builder("reboots").desc("Reboot current machine in seconds").hasArgs().build());
 		ArrayList<BusyThread> threadArray = new ArrayList<BusyThread>();
 
 		Timer timer = new Timer();
