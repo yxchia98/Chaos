@@ -44,7 +44,7 @@ public class MachineReboot extends Loader{
 	
 	private void rebootLinux() {
 		
-		String command = "shutdown -r";
+		String command = "shutdown -r now";
 		try {
 			System.out.println("Rebooting System in " + this.duration + "seconds. (Linux)");
 			Thread.sleep(this.duration * 1000);
