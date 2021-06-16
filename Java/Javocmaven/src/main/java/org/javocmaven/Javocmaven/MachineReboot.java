@@ -31,7 +31,7 @@ public class MachineReboot extends Loader{
 	}
 	
 	private void rebootWindows() {
-		String command = "Restart-Computer";
+		String command = "Restart-Computer -Force";
 		try {
 			System.out.println("Rebooting System in " + this.duration + "seconds. (Windows)");
 			Thread.sleep(this.duration * 1000);
