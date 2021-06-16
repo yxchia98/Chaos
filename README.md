@@ -1,4 +1,5 @@
 # Chaos
  
- Work in Progress <br>
- Materials for stress-testing on windows and linux machines
+ <strong>Work in Progress</strong> <br>
+ <h1>Materials for Chaos Engineering on Windows and Linux machines.</h1> <br>
+ 
