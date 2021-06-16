@@ -57,7 +57,7 @@ public class MainMenu {
 					CpuLoader cpuloader = new CpuLoader(a.getValues(), "minutes");
 					executeLoad(cpuloader);
 					threadArray = cpuloader.getThreadArray();
-				} else if (a.getOpt().equals("cpu-seconds")) {
+				} else if (a.getOpt().equals("cpus")) {
 					CpuLoader cpuloader = new CpuLoader(a.getValues(), "seconds");
 					executeLoad(cpuloader);
 					threadArray = cpuloader.getThreadArray();
