@@ -8,3 +8,9 @@
   <li>Linux</li>
   <li>Chef</li>
  </ul>
+ <br>
+ Applications and scripts:<br>
+ <ul>
+ <li>Javoc (Java application)</li>
+ <li>Javocbash.sh (shellscript)</li>
+ </ul>
