@@ -1,7 +1,8 @@
 # Chaos
  
  <strong>Work in Progress</strong> <br>
- <h1>Chaos Engineering on Windows and Linux machines</h1><br>
+ <h1>Chaos Engineering on Windows and Linux machines</h1><hr><br>
+ <h2>Resources</h2>
  Platforms:<br>
  <ul>
   <li>Windows</li>
