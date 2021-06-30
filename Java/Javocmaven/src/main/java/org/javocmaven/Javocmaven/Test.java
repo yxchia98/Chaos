@@ -3,18 +3,32 @@ package org.javocmaven.Javocmaven;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;
-import java.util.TimerTask;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.Date;
 
-public class Logger extends TimerTask {
-	public void run() {
+import com.opencsv.CSVWriter;
+
+public class Test {
+	public static void main(String[] args) {
+//		Timer timer = new Timer();
+//		timer.schedule(new Logger(), 0);
+		String cpuload = " ";
 		File disklog = new File("/");
 		Timestamp ts = new Timestamp(System.currentTimeMillis());
-		String logtxt = "LOGGED ON " + ts + "\n";
-
+		Date datetime = new Date(ts.getTime());
+		DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat timeformat = new SimpleDateFormat("HH:mm:ss");
+		String date = dateformat.format(datetime);
+		String time = timeformat.format(datetime);
 		long totalspace = disklog.getTotalSpace();
 		long freespace = disklog.getUsableSpace();
 		long usedspace = totalspace - freespace;
@@ -27,47 +41,58 @@ public class Logger extends TimerTask {
 		long totalmem = oslog.getTotalMemorySize();
 		long freemem = oslog.getFreeMemorySize();
 		long usedmem = totalmem - freemem;
-//		long jvmmem = Runtime.getRuntime().maxMemory();
 		double usedpercentmem = (double) usedmem / totalmem * 100;
-
-//		System.out.println("LOGGED ON " + ts);
-
-		logtxt += "Platform: " + os + "\n";
 
 		if (os.contains("Windows")) {
 			try {
-				logtxt += "CPU load: " + getCPU("Windows") + "\n";
+				cpuload = getCPU("Windows");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else {
 			try {
-				logtxt += "CPU load: " + getCPU("Linux") + "\n";
+				cpuload = getCPU("Linux");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		logtxt += "Total Memory(100%): " + Math.toIntExact((long) (totalmem / Math.pow(2, 20))) + "MB\nUsed Memory("
-				+ Math.round(usedpercentmem) + "%): " + Math.toIntExact((long) (usedmem / Math.pow(2, 20))) + "MB\n";
-		
-//		logtxt += "JVM Allocated Memory: " + jvmmem / Math.pow(2, 20) + "MB\n";
 
-		logtxt += "Total Space(100%): " + Math.toIntExact((long) (totalspace / Math.pow(2, 20))) + "MB\nUsed Space("
-				+ Math.round(usedpercentdisk) + "%): " + Math.toIntExact((long) (usedspace / Math.pow(2, 20)))
-				+ "MB\n\n";
+		List<String[]> csvData = new ArrayList<>();
 
-		File javoclog = new File("javoc.log");
-		FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(javoclog, true);
-			fos.write(logtxt.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
+		String[] csvLog = { os, cpuload, String.valueOf(Math.toIntExact((long) (totalmem / Math.pow(2, 20)))),
+				String.valueOf(Math.toIntExact((long) (usedmem / Math.pow(2, 20)))), String.valueOf(usedpercentmem),
+				String.valueOf(Math.toIntExact((long) (totalspace / Math.pow(2, 20)))),
+				String.valueOf(Math.toIntExact((long) (usedspace / Math.pow(2, 20)))), String.valueOf(usedpercentdisk),
+				date, time };
+		if (new File("javoclog.csv").exists()) {
+			// append to file
+			try {
+				csvData.add(csvLog);
+				CSVWriter writer = new CSVWriter(new FileWriter("javoclog.csv", true));
+				writer.writeAll(csvData, false);
+				writer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				String[] header = { "Platform", "CPU Load(%)", "Total Memory(MB)", "Used Memory(MB)", "Used Memory(%)",
+						"Total Space(MB)", "Used Space(MB)", "Used Space(%)", "Log Date", "Log Time" };
+				csvData.add(header);
+				csvData.add(csvLog);
+				CSVWriter writer = new CSVWriter(new FileWriter("javoclog.csv"));
+				writer.writeAll(csvData, false);
+				writer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
 
-	private String getCPU(String type) throws IOException {
+	private static String getCPU(String type) throws IOException {
 		String line = null;
 		ProcessBuilder builder = null;
 		if (type.equals("Windows")) {
