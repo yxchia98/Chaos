@@ -148,16 +148,16 @@ if [[ $role == "" && $name == "" ]]; then
   exit 0
 
 elif [[ $role == "" && $name != "" ]]; then
-  linuxexecutable="knife ssh 'name:$name AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -MaxRAMPercentage=100 -jar Javoc.jar $parameters'"
-  winexecutable="knife winrm 'name:$name AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -MaxRAMPercentage=100 -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
+  linuxexecutable="knife ssh 'name:$name AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -XX:MaxRAMPercentage=100 -jar Javoc.jar $parameters'"
+  winexecutable="knife winrm 'name:$name AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -XX:MaxRAMPercentage=100 -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
 
 elif [[ $role != "" && $name == "" ]]; then
-  linuxexecutable="knife ssh 'role:$role AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -MaxRAMPercentage=100 -jar Javoc.jar $parameters'"
-  winexecutable="knife winrm 'role:$role AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -MaxRAMPercentage=100 -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
+  linuxexecutable="knife ssh 'role:$role AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -XX:MaxRAMPercentage=100 -jar Javoc.jar $parameters'"
+  winexecutable="knife winrm 'role:$role AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -XX:MaxRAMPercentage=100 -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
 
 else
-  linuxexecutable="knife ssh 'role:$role AND name:$name AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -MaxRAMPercentage=100 -jar Javoc.jar $parameters'"
-  winexecutable="knife winrm 'role:$role AND name:$name AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -MaxRAMPercentage=100 -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
+  linuxexecutable="knife ssh 'role:$role AND name:$name AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -XX:MaxRAMPercentage=100 -jar Javoc.jar $parameters'"
+  winexecutable="knife winrm 'role:$role AND name:$name AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -XX:MaxRAMPercentage=100 -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
 
 fi
 
