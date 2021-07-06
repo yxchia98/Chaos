@@ -13,5 +13,6 @@
  Applications and scripts:<br>
  <ul>
  <li>Javoc (Java application)</li>
+ <li>javocbook (chef cookbook)</li>
  <li>Javocbash.sh (shellscript)</li>
  </ul>
