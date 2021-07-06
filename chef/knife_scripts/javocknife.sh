@@ -161,8 +161,6 @@ else
 
 fi
 
-# linuxexecutable="knife ssh 'role:$role AND platform:*linux*' 'cd \$HOME; jdk-16.0.1/bin/java -Xmx8g -jar Javoc.jar $parameters'"
-# winexecutable="knife winrm 'role:$role AND platform:*windows*' 'cd \$HOME; .\jdk-16.0.1\bin\java -Xmx8g -jar Javoc.jar $parameters' -x Administrator -P P@ssw0rd123 --winrm-shell powershell"
 echo $linuxexecutable
 echo $winexecutable
 eval "$linuxexecutable & $winexecutable"
