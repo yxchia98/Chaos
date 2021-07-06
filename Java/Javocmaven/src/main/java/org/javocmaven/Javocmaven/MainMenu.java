@@ -114,43 +114,4 @@ public class MainMenu {
 		timer.purge();
 
 	}
-
-//	public static void main(String[] args) {
-//		int duration = 5;
-//		ArrayList<String> loadType = new ArrayList<String>();
-//		ArrayList<String> parameters = new ArrayList<String>();
-//		double utilization = 50;
-//		for (String str : args) {
-//			if (str.equals("cpu") || str.equals("mem") || str.equals("disk") || str.equals("net")) {
-//				loadType.add(str);
-//			} else {
-//				parameters.add(str);
-//			}
-//		}
-//		if (parameters.size() > 0) {
-//			if (parameters.size() == 1) {
-//				duration = Integer.parseInt(parameters.get(0));
-//			} else if (parameters.size() == 2) {
-//				duration = Integer.parseInt(parameters.get(0));
-//				utilization = Double.parseDouble(parameters.get(1));
-//			} else {
-//			}
-//		}
-//
-//		for (String type : loadType) {
-//			if (type.equals("cpu")) {
-//				executeLoad(new CpuLoader(duration, utilization));
-//			} else if (type.equals("mem")) {
-//				executeLoad(new MemoryLeaker(duration, utilization));
-//
-//			} else if (type.equals("disk")) {
-//				executeLoad(new DiskWriter(duration, utilization));
-//
-//			} else if (type.equals("net")) {
-//				executeLoad(new NetworkLagger(duration, utilization));
-//
-//			}
-//		}
-//
-//	}
 }
