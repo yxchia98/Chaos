@@ -1,14 +1,19 @@
 package org.javocmaven.Javocmaven;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.zip.ZipException;
 
 public class NetworkLagger extends Loader {
 
-	int duration;
-	double utilization;
-	String type = "lag";
+	private int duration;
+	private double utilization;
+	private String type = "lag";
+	private URI zipfile;
+	private String zipfilepath, folder;
 
 	public NetworkLagger(int duration, double utilization) {
 		this.duration = duration;
@@ -40,6 +45,12 @@ public class NetworkLagger extends Loader {
 	public void load() {
 		String operatingSystem = System.getProperty("os.name");
 		if (operatingSystem.contains("Windows")) {
+			try {
+				extractClumsy();
+			} catch (URISyntaxException | IOException | InterruptedException e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
 			if (this.type.equals("lag")) {
 				System.out.println("Injecting network latency of " + this.utilization + "ms, for " + this.duration
 						+ "s (Windows machine)");
@@ -58,6 +69,11 @@ public class NetworkLagger extends Loader {
 				this.throttleWindows();
 			} else {
 				System.out.println("Invalid Arguments entered");
+			}
+			try {
+				deleteClumsy();
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
 			}
 		} else if (operatingSystem.contains("Linux")) {
 			if (this.type.equals("lag")) {
@@ -101,8 +117,11 @@ public class NetworkLagger extends Loader {
 //		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", start, "\n", lagtime, "\n", stop));
+			Thread.sleep(duration * 1000);
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -215,6 +234,17 @@ public class NetworkLagger extends Loader {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void extractClumsy() throws URISyntaxException, ZipException, IOException, InterruptedException {
+		this.zipfile = ResourceFile.getFile(ResourceFile.getJarURI(), "clumsy-0.2-win64.zip");
+		this.zipfilepath = new File(zipfile).getPath();
+		this.folder = ResourceFile.getJarDir();
+		ResourceFile.extractFolder(zipfilepath, folder);
+	}
+	private void deleteClumsy() throws ZipException, IOException, URISyntaxException {
+		ResourceFile.deleteResource(this.zipfilepath, "file");
+		ResourceFile.deleteResource(this.folder, "dir");
 	}
 
 }

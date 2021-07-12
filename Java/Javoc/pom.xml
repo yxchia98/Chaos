@@ -87,7 +87,7 @@
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<configuration>
-					<outputDirectory>jar</outputDirectory>
+						<outputDirectory>jar</outputDirectory>
 						<archive>
 							<manifest>
 								<mainClass>org.javocmaven.Javocmaven.MainMenu</mainClass>

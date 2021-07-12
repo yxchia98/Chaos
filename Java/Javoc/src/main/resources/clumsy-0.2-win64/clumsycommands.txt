@@ -1,0 +1,9 @@
+.\clumsy.exe --filter "inbound" --lag on --lag-time 100
+
+.\clumsy.exe --filter "outbound" --lag on --lag-time 100
+
+Stop-Process -Name clumsy
+
+start-process .\clumsy.exe -ArgumentList '--filter "outbound" --lag on --lag-time 100'
+
+start-process .\clumsy.exe -ArgumentList '--filter "ip.DstAddr >= 0.0.0.0" --duplicate on --duplicate-inbound on --duplicate-outbound on --duplicate-chance 100.0 --duplicate-count 50'
