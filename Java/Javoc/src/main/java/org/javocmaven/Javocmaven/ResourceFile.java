@@ -10,24 +10,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.InputMismatchException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class ResourceFile {
-	public static void main(final String[] args)
-			throws URISyntaxException, ZipException, IOException, InterruptedException {
-		URI zipfile = getFile(getJarURI(), "clumsy-0.2-win64.zip");
-		String zipfilepath = new File(zipfile).getPath();
-		String folder = getJarDir();
-		extractFolder(zipfilepath, folder);
-		Thread.sleep(5000);
-		deleteResource(zipfilepath, "file");
-		deleteResource(folder, "dir");
-		
-	}
 
 	protected static String getJarDir() throws URISyntaxException {
 		return new File(ResourceFile.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
@@ -47,9 +39,8 @@ public class ResourceFile {
 		if (location.isDirectory()) {
 			fileURI = URI.create(where.toString() + fileName);
 		} else {
-			ZipFile zipFile;
 
-			zipFile = new ZipFile(location);
+			ZipFile zipFile = new ZipFile(location);
 
 			try {
 				fileURI = extractFile(zipFile, fileName);
@@ -69,7 +60,6 @@ public class ResourceFile {
 //		tempFile = File.createTempFile(fileName, Long.toString(System.currentTimeMillis()));
 //		tempFile = File.createTempFile(fileName, ".zip");
 		tempFile = new File(fileName);
-//		tempFile.deleteOnExit();
 		entry = zipFile.getEntry(fileName);
 
 		if (entry == null) {
@@ -94,53 +84,92 @@ public class ResourceFile {
 			close(zipStream);
 			close(fileStream);
 		}
+		tempFile.deleteOnExit();
 		return (tempFile.toURI());
 	}
 
-	protected static void extractFolder(String source, String dest) throws IOException {
-		File destDir = new File(dest);
-		byte[] buffer = new byte[1024];
-		ZipInputStream zis = new ZipInputStream(new FileInputStream(source));		
-		ZipEntry zipEntry = zis.getNextEntry();
-		while (zipEntry != null) {
-			File newFile = newFile(destDir, zipEntry);
-			if (zipEntry.isDirectory()) {
-				if (!newFile.isDirectory() && !newFile.mkdirs()) {
-					throw new IOException("Failed to create directory " + newFile);
-				}
-			} else {
-				// fix for Windows-created archives
-				File parent = newFile.getParentFile();
-				if (!parent.isDirectory() && !parent.mkdirs()) {
-					throw new IOException("Failed to create directory " + parent);
+	protected static void unzipFolder(String source, String target) throws IOException {
+
+		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(Paths.get(source).toFile()))) {
+
+			// list files in zip
+			ZipEntry zipEntry = zis.getNextEntry();
+
+			while (zipEntry != null) {
+
+				boolean isDirectory = false;
+				// example 1.1
+				// some zip stored files and folders separately
+				// e.g data/
+				// data/folder/
+				// data/folder/file.txt
+				if (zipEntry.getName().endsWith(File.separator)) {
+					isDirectory = true;
 				}
 
-				// write file content
-				FileOutputStream fos = new FileOutputStream(newFile);
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
+				Path newPath = zipSlipProtect(zipEntry, Paths.get(target));
+
+				if (isDirectory) {
+					Files.createDirectories(newPath);
+				} else {
+
+					// example 1.2
+					// some zip stored file path only, need create parent directories
+					// e.g data/folder/file.txt
+					if (newPath.getParent() != null) {
+						if (Files.notExists(newPath.getParent())) {
+							Files.createDirectories(newPath.getParent());
+						}
+					}
+
+					// copy files, nio
+					Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
+
+					// copy files, classic
+					/*
+					 * try (FileOutputStream fos = new FileOutputStream(newPath.toFile())) { byte[]
+					 * buffer = new byte[1024]; int len; while ((len = zis.read(buffer)) > 0) {
+					 * fos.write(buffer, 0, len); } }
+					 */
 				}
-				fos.close();
+				zipEntry = zis.getNextEntry();
 			}
-			zipEntry = zis.getNextEntry();
-		}
-		zis.closeEntry();
-		zis.close();
-	}
-
-	protected static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-		File destFile = new File(destinationDir, zipEntry.getName());
-
-		String destDirPath = destinationDir.getCanonicalPath();
-		String destFilePath = destFile.getCanonicalPath();
-
-		if (!destFilePath.startsWith(destDirPath + File.separator)) {
-			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+			zis.closeEntry();
+			zis.close();
 		}
 
-		return destFile;
 	}
+
+	// protect zip slip attack
+	protected static Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) throws IOException {
+
+		// test zip slip vulnerability
+		// Path targetDirResolved = targetDir.resolve("../../" + zipEntry.getName());
+
+		Path targetDirResolved = targetDir.resolve(zipEntry.getName());
+
+		// make sure normalized file still has targetDir as its prefix
+		// else throws exception
+		Path normalizePath = targetDirResolved.normalize();
+		if (!normalizePath.startsWith(targetDir)) {
+			throw new IOException("Bad zip entry: " + zipEntry.getName());
+		}
+
+		return normalizePath;
+	}
+
+//	protected static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+//		File destFile = new File(destinationDir, zipEntry.getName());
+//
+//		String destDirPath = destinationDir.getCanonicalPath();
+//		String destFilePath = destFile.getCanonicalPath();
+//
+//		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+//			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+//		}
+//
+//		return destFile;
+//	}
 
 	protected static void close(final Closeable stream) {
 		if (stream != null) {
@@ -150,35 +179,5 @@ public class ResourceFile {
 				ex.printStackTrace();
 			}
 		}
-	}
-
-	protected static boolean deleteResource(String path, String type) throws InputMismatchException {
-		File resource = new File(path);
-		if (type.equals("file")) {
-			if (!resource.exists()) {
-				throw new InputMismatchException("Specified file, but path does not point to a file.");
-			} else {
-				return resource.delete();
-			}
-		} else if (type.equals("dir")) {
-			if (!resource.isDirectory()) {
-				throw new InputMismatchException("Specified directory, but path does not point to a directory.");
-			} else {
-				return deleteDirectory(resource);
-			}
-
-		} else {
-			throw new InputMismatchException("Type not specified correctly, either 'file' or 'dir' can be used.");
-		}
-	}
-
-	protected static boolean deleteDirectory(File directoryToBeDeleted) {
-		File[] allContents = directoryToBeDeleted.listFiles();
-		if (allContents != null) {
-			for (File file : allContents) {
-				deleteDirectory(file);
-			}
-		}
-		return directoryToBeDeleted.delete();
 	}
 }

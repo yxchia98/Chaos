@@ -46,9 +46,11 @@ public class NetworkLagger extends Loader {
 		String operatingSystem = System.getProperty("os.name");
 		if (operatingSystem.contains("Windows")) {
 			try {
-				extractClumsy();
+				File clumsyfolder = new File(ResourceFile.getJarDir() + "\\clumsy-0.2-win64");
+				if(!clumsyfolder.isDirectory()) {
+					extractClumsy();
+				}
 			} catch (URISyntaxException | IOException | InterruptedException e) {
-				System.out.println(e.getMessage());
 				e.printStackTrace();
 			}
 			if (this.type.equals("lag")) {
@@ -69,11 +71,6 @@ public class NetworkLagger extends Loader {
 				this.throttleWindows();
 			} else {
 				System.out.println("Invalid Arguments entered");
-			}
-			try {
-				deleteClumsy();
-			} catch (IOException | URISyntaxException e) {
-				e.printStackTrace();
 			}
 		} else if (operatingSystem.contains("Linux")) {
 			if (this.type.equals("lag")) {
@@ -117,11 +114,8 @@ public class NetworkLagger extends Loader {
 //		System.out.println(dir);
 		try {
 			execCommand(new ProcessBuilder("powershell.exe", start, "\n", lagtime, "\n", stop));
-			Thread.sleep(duration * 1000);
 		} catch (IOException e) {
 			System.out.println("Unable to execute command.");
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -235,16 +229,21 @@ public class NetworkLagger extends Loader {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void extractClumsy() throws URISyntaxException, ZipException, IOException, InterruptedException {
 		this.zipfile = ResourceFile.getFile(ResourceFile.getJarURI(), "clumsy-0.2-win64.zip");
 		this.zipfilepath = new File(zipfile).getPath();
 		this.folder = ResourceFile.getJarDir();
-		ResourceFile.extractFolder(zipfilepath, folder);
+		ResourceFile.unzipFolder(this.zipfilepath, this.folder);
+		Thread.sleep(5000);
 	}
-	private void deleteClumsy() throws ZipException, IOException, URISyntaxException {
-		ResourceFile.deleteResource(this.zipfilepath, "file");
-		ResourceFile.deleteResource(this.folder, "dir");
-	}
+
+//	private void deleteClumsy() throws IOException {
+//		File clumsyFolder = new File(this.folder);
+//		FileDeleteStrategy.FORCE.delete(new File(this.zipfilepath));
+//		for (File file : clumsyFolder.listFiles()) {
+//			FileDeleteStrategy.FORCE.delete(file);
+//		}
+//	}
 
 }
