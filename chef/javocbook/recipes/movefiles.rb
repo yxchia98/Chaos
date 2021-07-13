@@ -27,19 +27,19 @@ else
 	  source "openjdk-16.0.1_windows-x64_bin.zip"
 	  action :create
 	end
-	cookbook_file "#{ENV['HOME']}/clumsy-0.2-win64.zip" do
-	  source 'clumsy-0.2-win64.zip'
-	  action :create
-	end
-	if File.directory?("#{ENV['HOME']}/clumsy-0.2-win64")
-        else
-                powershell_script 'unzip_clumsy(windows)' do
-                  code <<-EOS
-                  cd $HOME
-                  Expand-Archive -LiteralPath .\\clumsy-0.2-win64.zip $HOME
-                  EOS
-                end
-        end
+	# cookbook_file "#{ENV['HOME']}/clumsy-0.2-win64.zip" do
+	#   source 'clumsy-0.2-win64.zip'
+	#   action :create
+	# end
+	# if File.directory?("#{ENV['HOME']}/clumsy-0.2-win64")
+    #     else
+    #             powershell_script 'unzip_clumsy(windows)' do
+    #               code <<-EOS
+    #               cd $HOME
+    #               Expand-Archive -LiteralPath .\\clumsy-0.2-win64.zip $HOME
+    #               EOS
+    #             end
+    #     end
 	if File.directory?("#{ENV['HOME']}/jdk-16.0.1")
         else
                 powershell_script 'unzip_openjdk(windows)' do
