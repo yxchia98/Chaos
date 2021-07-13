@@ -41,14 +41,14 @@ else
     #             end
     #     end
 	if File.directory?("#{ENV['HOME']}/jdk-16.0.1")
-        else
-                powershell_script 'unzip_openjdk(windows)' do
-                  code <<-EOS
-		  cd $HOME
-		  Expand-Archive -LiteralPath .\\openjdk-16.0.1_windows-x64_bin.zip $HOME
-                  EOS
-                end
-        end
-
+	else
+		powershell_script 'unzip_openjdk(windows)' do
+			code <<-EOS
+			cd $HOME
+			Expand-Archive -LiteralPath .\\openjdk-16.0.1_windows-x64_bin.zip $HOME
+			EOS
+			notifies :delete, "cookbook_file[#{ENV['HOME']}/openjdk-16.0.1_windows-x64_bin.zip]"
+		end
+	end
 end
 
