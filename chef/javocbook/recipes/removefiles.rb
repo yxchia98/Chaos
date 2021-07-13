@@ -31,14 +31,22 @@ else
 		action :delete
 	end
 
-	file "#{ENV['HOME']}/clumsy-0.2-win64.zip" do
-		only_if { ::File.exist?("#{ENV['HOME']}/clumsy-0.2-win64.zip") }
+	file "#{ENV['HOME']}/clumsy-0.3rc3-win64.zip" do
+		only_if { ::File.exist?("#{ENV['HOME']}/clumsy-0.3rc3-win64.zip") }
 		action :delete
 	end
 
-	directory "#{ENV['HOME']}/clumsy-0.2-win64" do
+	powershell_script 'windivert_kill' do
+		code <<-EOS
+		cd $HOME
+		clumsy-0.3rc3-win64\\WinDivertTool.exe --force uninstall
+		EOS
+		notifies :delete, "directory[#{ENV['HOME']}/clumsy-0.3rc3-win64]"
+	end
+
+	directory "#{ENV['HOME']}/clumsy-0.3rc3-win64" do
 		recursive true
-		action :delete
+		action :nothing
 	end
 end
 

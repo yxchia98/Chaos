@@ -1,5 +1,0 @@
-.\clumsy.exe --filter "inbound" --lag on --lag-time 100
-
-.\clumsy.exe --filter "outbound" --lag on --lag-time 100
-
-Stop-Process -Name clumsy

@@ -46,7 +46,7 @@ public class NetworkLagger extends Loader {
 		String operatingSystem = System.getProperty("os.name");
 		if (operatingSystem.contains("Windows")) {
 			try {
-				File clumsyfolder = new File(ResourceFile.getJarDir() + "\\clumsy-0.2-win64");
+				File clumsyfolder = new File(ResourceFile.getJarDir() + "\\clumsy-0.3rc3-win64");
 				if(!clumsyfolder.isDirectory()) {
 					extractClumsy();
 				}
@@ -105,7 +105,7 @@ public class NetworkLagger extends Loader {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
+		String appPath = currentdir + "\\clumsy-0.3rc3-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
 		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --lag on --lag-inbound off --lag-outbound on --lag-time "
@@ -140,7 +140,7 @@ public class NetworkLagger extends Loader {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
+		String appPath = currentdir + "\\clumsy-0.3rc3-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
 		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --duplicate on --duplicate-inbound off --duplicate-outbound on --duplicate-count 2 --duplicate-chance "
@@ -175,7 +175,7 @@ public class NetworkLagger extends Loader {
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
-		String appPath = currentdir + "\\clumsy-0.2-win64\\clumsy.exe";
+		String appPath = currentdir + "\\clumsy-0.3rc3-win64\\clumsy.exe";
 		String stop = "Stop-Process -Name 'clumsy'";
 		String lagtime = "Start-Sleep -s " + Integer.toString(this.duration);
 		String arguments = "--filter \"\"ip.DstAddr >= 0.0.0.0 \"\"\" --drop on --drop-outbound on --drop-inbound off --drop-chance "
@@ -231,7 +231,7 @@ public class NetworkLagger extends Loader {
 	}
 
 	private void extractClumsy() throws URISyntaxException, ZipException, IOException, InterruptedException {
-		this.zipfile = ResourceFile.getFile(ResourceFile.getJarURI(), "clumsy-0.2-win64.zip");
+		this.zipfile = ResourceFile.getFile(ResourceFile.getJarURI(), "clumsy-0.3rc3-win64.zip");
 		this.zipfilepath = new File(zipfile).getPath();
 		this.folder = ResourceFile.getJarDir();
 		ResourceFile.unzipFolder(this.zipfilepath, this.folder);
