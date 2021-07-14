@@ -77,15 +77,18 @@ public class Logger extends TimerTask {
 	private void exportCSV() {
 
 		List<String[]> csvData = new ArrayList<>();
+		String path = "." + File.separator + "javoc_log" + File.separator + "javoclog.csv";
+		File file = new File(path);
+		file.getParentFile().mkdirs();
 
 		String[] csvLog = { this.date, this.time, this.os, this.cpuload, this.totalmem_string, this.usedmem_string,
 				this.usedpercentmem_string, this.totalspace_string, this.usedspace_string,
 				this.usedpercentdisk_string };
-		if (new File("javoclog.csv").exists()) {
+		if (file.exists()) {
 			// append to file
 			try {
 				csvData.add(csvLog);
-				CSVWriter writer = new CSVWriter(new FileWriter("javoclog.csv", true));
+				CSVWriter writer = new CSVWriter(new FileWriter(path, true));
 				writer.writeAll(csvData, false);
 				writer.close();
 			} catch (IOException e) {
@@ -98,7 +101,7 @@ public class Logger extends TimerTask {
 						"Used Memory(MB)", "Used Memory(%)", "Total Space(MB)", "Used Space(MB)", "Used Space(%)" };
 				csvData.add(header);
 				csvData.add(csvLog);
-				CSVWriter writer = new CSVWriter(new FileWriter("javoclog.csv"));
+				CSVWriter writer = new CSVWriter(new FileWriter(path));
 				writer.writeAll(csvData, false);
 				writer.close();
 			} catch (IOException e) {
@@ -112,6 +115,10 @@ public class Logger extends TimerTask {
 	private void exportJSON() {
 
 		LinkedHashMap<String, String> valuesmap = new LinkedHashMap<>();
+		
+		String path = "." + File.separator + "javoc_log" + File.separator + "javoclog.json";
+		File file = new File(path);
+		file.getParentFile().mkdirs();
 
 		valuesmap.put("Log Date", this.date);
 		valuesmap.put("Log Time", this.time);
@@ -128,7 +135,7 @@ public class Logger extends TimerTask {
 		String jsonData = builder.create().toJson(valuesmap);
 
 		try {
-			FileWriter writer = new FileWriter("javoclog.json", true);
+			FileWriter writer = new FileWriter(path, true);
 			writer.write(jsonData);
 			writer.write(System.getProperty("line.separator"));
 			writer.close();
@@ -150,6 +157,10 @@ public class Logger extends TimerTask {
 	}
 
 	private void exportTXT() {
+		
+		String path = "." + File.separator + "javoc_log" + File.separator + "javoclog.txt";
+		File file = new File(path);
+		file.getParentFile().mkdirs();
 
 		String logtxt = "LOG DATE: " + this.date + "\n";
 		logtxt += "LOG TIME: " + this.time + "\n";
@@ -166,7 +177,7 @@ public class Logger extends TimerTask {
 		logtxt += "Total Space(100%): " + this.totalspace_string + "MB\nUsed Space(" + this.usedpercentdisk_string
 				+ "%): " + this.usedspace_string + "MB\n\n";
 
-		File javoclog = new File("javoclog.log");
+		File javoclog = new File(path);
 		FileOutputStream fos;
 		try {
 			fos = new FileOutputStream(javoclog, true);
