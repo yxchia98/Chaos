@@ -1,21 +1,22 @@
 if platform?('redhat')
 	cookbook_file "#{ENV['HOME']}/Javoc.jar" do
-	  source 'Javoc.jar'
-	  mode '0755'
-	  action :create
+	    source 'Javoc.jar'
+		mode '0755'
+		action :create
 	end
 	cookbook_file "#{ENV['HOME']}/openjdk-16.0.1_linux-x64_bin.tar.gz" do
-	  source "openjdk-16.0.1_linux-x64_bin.tar.gz"
-	  mode '0755'
-	  action :create
+		source "openjdk-16.0.1_linux-x64_bin.tar.gz"
+		mode '0755'
+		action :create
 	end
-        if File.directory?("#{ENV['HOME']}/jdk-16.0.1")
+	if File.directory?("#{ENV['HOME']}/jdk-16.0.1")
 	else
 		execute 'unzip_openjdk(linux)' do
-	  	  command <<-EOS
-	  	  cd #{ENV['HOME']}
-	  	  tar -xvf openjdk-16.0.1_linux-x64_bin.tar.gz
-	  	  EOS
+			command <<-EOS
+			cd #{ENV['HOME']}
+			tar -xvf openjdk-16.0.1_linux-x64_bin.tar.gz
+			EOS
+			notifies :delete, "cookbook_file[#{ENV['HOME']}/openjdk-16.0.1_linux-x64_bin.tar.gz]"
 		end
 	end
 else
